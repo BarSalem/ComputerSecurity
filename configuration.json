@@ -1,0 +1,9 @@
+{
+    "password": {
+        "length": 8,
+        "filter_characters": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/",
+        "history_limit": 10,
+        "avoid_sequence": []
+    },
+    "num_of_login_attempts": 3
+}
