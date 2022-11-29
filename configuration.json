@@ -33,6 +33,18 @@
                     "password": "password",
                     "creation_date": "creation_date"
                 }
+            },
+            "clients": {
+                "table_name": "clients",
+                "fields": {
+                    "email": "email",
+                    "first_name": "first_name",
+                    "last_name": "last_name",
+                    "phone_number": "phone_number",
+                    "password": "password",
+                    "creation_token": "creation_token",
+                    "activated": "activated"
+                }
             }
         }
     }
