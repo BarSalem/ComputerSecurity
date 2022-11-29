@@ -1,0 +1,39 @@
+{
+    "password": {
+        "length": 8,
+        "filter_characters": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/",
+        "history_limit": 10,
+        "avoid_sequence": []
+    },
+    "login": {
+        "num_of_login_attempts": 3
+    },
+    "DB": {
+        "host": "localhost",
+        "user": "root",
+        "password": "123456",
+        "db_name": "communication_ltd",
+        "tables": {
+            "users_details": {
+                "table_name": "users_details",
+                "fields": {
+                    "email": "email",
+                    "first_name": "first_name",
+                    "last_name": "last_name",
+                    "phone_number": "phone_number",
+                    "password": "password",
+                    "creation_token": "creation_token",
+                    "activated": "activated"
+                }
+            },
+            "password_history": {
+                "table_name": "password_history",
+                "fields": {
+                    "email": "email",
+                    "password": "password",
+                    "creation_date": "creation_date"
+                }
+            }
+        }
+    }
+}
