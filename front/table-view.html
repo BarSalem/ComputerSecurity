@@ -4,16 +4,61 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="login-page.js"></script>
+    <script src="table-view.js"></script>
     <link rel="stylesheet" href="tabler.css">
 </head>
 <body class="theme-dark">
 <div clas="page page-center">
     <div class="container container-xxl py-4">
+        <h2 class="h2 text-center mb-4">Registered Accounts</h2>
         <div class="card card-md">
-            <div class="card-body">
-                <h2 class="h2 text-center mb-4">Registered Accounts</h2>
-                <div class="ta"></div>
+            <div class="card-body border-bottom py-3">
+                <div class="d-flex">
+                    <div class="text-muted input-group-sm d-inline-flex"style="width: 10rem">
+                        <span> Showing</span>
+                        <input class="from-page form-control form-control-sm" disabled>
+                        <span class="input-group-text">-</span>
+                        <input class="to-page form-control form-control-sm" disabled>
+                    </div>
+                    <div class="ms-auto text-muted">
+                        Search:
+                        <div class="ms-2 d-inline-block">
+                            <input type="text" class="form-control form-control-sm" aria-label="Search invoice">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-vector card-table">
+                    <thead>
+                        <th><input id="select-all" class="form-check-input m-0 align-middle" type="checkbox"></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                        <th>Phone Nmber</th>
+                    </thead>
+                    <tbody id="table-content">
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body border-bottom py-3 card-footer d-flex align-items-center">
+                <div class="text-muted input-group-sm d-inline-flex"style="width: 10rem">
+                    <span> Showing</span>
+                    <input class="from-page form-control form-control-sm" disabled>
+                    <span class="input-group-text">-</span>
+                    <input class="to-page form-control form-control-sm" disabled>
+                </div>
+                <ul class="pagination m-0 ms-auto">
+
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            next
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
