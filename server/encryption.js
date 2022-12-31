@@ -17,4 +17,13 @@ const verifyPasswordMatchToHash = (password, hashed_password) => {
     return hashPassword(password)==hashed_password
 }
 
-export {hashPassword, verifyPasswordMatchToHash}
+const generateRandomString = (password, hashed_password) => {
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let token = '';
+    for (let i = 0; i < 25; i++) {
+    token += characters[Math.floor(Math.random() * characters.length )];
+    }
+    return token
+}
+
+export {hashPassword, verifyPasswordMatchToHash, generateRandomString}
