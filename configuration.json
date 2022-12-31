@@ -2,7 +2,7 @@
     "password": {
         "length": 8,
         "filter_characters": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/",
-        "history_limit": 10,
+        "history_limit": 3,
         "avoid_sequence": []
     },
     "login": {
@@ -32,6 +32,16 @@
                     "email": "email",
                     "password": "password",
                     "creation_date": "creation_date"
+                }
+            },
+            "clients": {
+                "table_name": "clients",
+                "fields": {
+                    "email": "email",
+                    "first_name": "first_name",
+                    "last_name": "last_name",
+                    "phone_number": "phone_number",
+                    "city": "city"
                 }
             }
         }
