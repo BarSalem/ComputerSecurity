@@ -123,7 +123,6 @@ function addEventListeners() {
 
 function checkAllListener() {
     $("#select-all").on("change", (e) => {
-        console.log("here");
         $(".check-one").prop("checked", $(e.target).prop("checked"));
     });
 
@@ -152,7 +151,6 @@ function navListeners() {
 }
 
 function goToPage(num) {
-    console.log("going to page" + num);
     startPage = num;
     //todo:add request instead of fake request
     // sendRequest(num);
@@ -160,13 +158,12 @@ function goToPage(num) {
     removeData();
     addRowsToTable();
     addTableNav();
-    addEventListeners();// Get the current URL
+    addEventListeners();
     let currentUrl = new URL(window.location.href);
     let params = new URLSearchParams(currentUrl.search);
     params.set("page", num);
     currentUrl.search = params.toString();
     window.history.replaceState({}, "", currentUrl.toString());
-    console.log(1);
     $("#select-all").prop("checked", false);
     window.scrollTo(0, 0);
 }
