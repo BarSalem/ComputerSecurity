@@ -4,7 +4,7 @@ const letters = [];
 let totalRows;
 const itemsPerPage = 50;
 let startPage = new URL(location.href).searchParams.get('page');
-startPage = startPage ? Number(startPage) : 1;
+startPage = !startPage||Number(startPage)<1 ? 1: Number(startPage);
 $(document).ready(() => {
     //todo: delete
     createFakeReq();
@@ -122,36 +122,38 @@ function addEventListeners() {
 }
 
 function checkAllListener() {
-    $("select-all").on("change", (e) => {
+    $("#select-all").on("change", (e) => {
         console.log("here");
-        $("check-one").forEach((c) => {
-            c.prop("checked", e.target.prop("checked"))
-        })
+        $(".check-one").prop("checked", $(e.target).prop("checked"));
+    });
+
+    $(".check-one").on("change", (e) => {
+        $("#select-all").prop("checked", $('.check-one:checked').length == $('.check-one').length);
     });
 }
 
 function navListeners() {
     $(".page-item").on("click", (e) => {
         e.preventDefault();
-        let id = e.target.id?e.target.id:e.target.parentElement.id;
-        switch (id){
+        let id = e.target.id ? e.target.id : e.target.parentElement.id;
+        switch (id) {
             case "next":
-                goToPage(startPage+1);
+                goToPage(startPage + 1);
                 break
             case "prev":
-                goToPage(startPage-1);
+                goToPage(startPage - 1);
                 break;
             default:
-                goToPage(Number(id.replace("page","")));
+                goToPage(Number(id.replace("page", "")));
         }
 
     });
 
 }
 
-function goToPage(num){
-    console.log("going to page"+num);
-    startPage= num;
+function goToPage(num) {
+    console.log("going to page" + num);
+    startPage = num;
     //todo:add request instead of fake request
     // sendRequest(num);
     createFakeReq();
@@ -164,4 +166,7 @@ function goToPage(num){
     params.set("page", num);
     currentUrl.search = params.toString();
     window.history.replaceState({}, "", currentUrl.toString());
+    console.log(1);
+    $("#select-all").prop("checked", false);
+    window.scrollTo(0, 0);
 }
