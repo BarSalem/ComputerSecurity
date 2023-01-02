@@ -155,6 +155,10 @@ app.post('/del-client', async (req, res) => {
     }
 })
 
+// console.log(await insert_client(connection, "email11213", "first_name", "last_name", "052521", "city"))
+// console.log(await get_all_clients())
+
+
 app.post('/changepasswordlogged', async (req, res) => {
     const {email, user_old_password, user_new_password} = req.body
     const hashed_old_password = hashPassword(user_old_password)
