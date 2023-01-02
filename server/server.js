@@ -132,6 +132,10 @@ app.post('/del-client', async (req, res) => {
     }
 })
 
+// console.log(await insert_client(connection, "email11213", "first_name", "last_name", "052521", "city"))
+// console.log(await get_all_clients())
+
+
 
 app.get('/getclients', async (req, res) => {
         const all_clients= await get_all_clients(connection, 0)
