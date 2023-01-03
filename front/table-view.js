@@ -4,7 +4,7 @@ const letters = [];
 let totalRows;
 const itemsPerPage = 50;
 let startPage = new URL(location.href).searchParams.get('page');
-startPage = !startPage||Number(startPage)<1 ? 1: Number(startPage);
+startPage = !startPage || Number(startPage) < 1 ? 1 : Number(startPage);
 $(document).ready(() => {
     //todo: delete
     createFakeReq();
@@ -89,22 +89,31 @@ function removeData() {
 
 function addRow(r) {
     let checkboxTD = createNewElement("td", null, null);
-    let firstNameTD = createNewElement("td", null, r.firstName);
-    let lastNameTD = createNewElement("td", null, r.lastName);
-    let userNameTD = createNewElement("td", null, r.userName);
-    let phoneNumTD = createNewElement("td", null, r.phoneNum);
-    let checkbox = createNewElement("input", "form-check-input m-0 align-middle check-one", null);
+    let firstNameTD = createNewElement("td", null, r.firstName,"first-name"+r.userName);
+    let lastNameTD = createNewElement("td", null, r.lastName,"last-name"+r.userName);
+    let userNameTD = createNewElement("td", null, r.userName,"username"+r.userName);
+    let phoneNumTD = createNewElement("td", null, r.phoneNum,"phone-number"+r.userName);
+    let checkbox = createNewElement("input", "form-check-input m-0 align-middle check-one", null,"checkbox"+r.userName);
     checkbox.type = "checkbox";
     $(checkboxTD).append(checkbox);
-    let tdList = [checkboxTD, firstNameTD, lastNameTD, userNameTD, phoneNumTD];
-    let tr = createNewElement("tr");
+    let deleteTD = createNewElement("td", null, null);
+    deleteTD.title="Delete User"
+    let deleteIcon = createNewElement("button", "delete-user-btn", `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+   <circle cx="9" cy="7" r="4"></circle>
+   <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+   <path d="M17 9l4 4m0 -4l-4 4"></path>
+    </svg>`,"delete-btn"+r.userName);
+    deleteTD.append(deleteIcon);
+    let tdList = [checkboxTD, firstNameTD, lastNameTD, userNameTD, phoneNumTD, deleteTD];
+    let tr = createNewElement("tr",null,null,r.userName);
     tdList.forEach((td) => $(tr).append(td));
     $("#table-content").append(tr);
 
 
 }
 
-function createNewElement(tag, htmlClass, text) {
+function createNewElement(tag, htmlClass, html,id) {
     let el = document.createElement(tag);
     if (htmlClass) {
         let classes = htmlClass.split(" ");
@@ -112,13 +121,16 @@ function createNewElement(tag, htmlClass, text) {
             el.classList.add(c)
         });
     }
-    if (text) $(el).text(text);
+    if (html) $(el).html(html);
+    if(id) el.id = id;
     return el;
+
 }
 
 function addEventListeners() {
     checkAllListener();
     navListeners();
+    deleteUsersListeners()
 }
 
 function checkAllListener() {
@@ -147,7 +159,20 @@ function navListeners() {
         }
 
     });
+}
+function deleteUsersListeners(){
+    $(".delete-user-btn").on("click",(e)=>{
+        e.stopPropagation();
+        let buttonID = $(e.target).closest('button').attr('id');
+        if(this.id == "delete-selected"){
 
+            console.log(buttonID);
+
+        }
+        else{
+            console.log(buttonID)
+        }
+    })
 }
 
 function goToPage(num) {
