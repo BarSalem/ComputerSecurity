@@ -14,7 +14,7 @@
         <div class="card card-md">
             <div class="card-body border-bottom py-3">
                 <div class="d-flex">
-                    <div class="text-muted input-group-sm d-inline-flex"style="width: 10rem">
+                    <div class="text-muted input-group-sm d-inline-flex" style="width: 10rem">
                         <span> Showing</span>
                         <input class="from-page form-control form-control-sm" disabled>
                         <span class="input-group-text">-</span>
@@ -31,31 +31,42 @@
             <div class="table-responsive">
                 <table class="table table-vector card-table">
                     <thead>
-                        <th><input id="select-all" class="form-check-input m-0 align-middle" type="checkbox"></th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
-                        <th>Phone Nmber</th>
+                    <th><input id="select-all" class="form-check-input m-0 align-middle" type="checkbox"></th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                    <th>Phone Number</th>
+                    <th>
+                        <button id="delete-selected" class="delete-user-btn" title="Delete Selected Users">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="24"
+                             height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <circle cx="7" cy="7" r="4"></circle>
+                            <path d="M19 9l4 4m0-4-4 4"></path>
+                            <path d="M1 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"></path>
+                            <path d="M14 3.13a4 4 0 0 1 0 7.75"></path>
+                            <path d="M19 21v-2a4 4 0 0 0-3-3.85"></path>
+                        </svg>
+                        </button>
+                    </th>
                     </thead>
                     <tbody id="table-content">
                     </tbody>
                 </table>
             </div>
-
-            </div>
-            <div id="table-nav" class="card-body border-bottom py-3 card-footer d-flex align-items-center">
-                <div class="text-muted input-group-sm d-inline-flex"style="width: 10rem">
+            <div id="table-nav" class="card-body py-3 card-footer d-flex align-items-center">
+                <div class="text-muted input-group-sm d-inline-flex" style="width: 10rem">
                     <span> Showing</span>
                     <input class="from-page form-control form-control-sm" disabled>
                     <span class="input-group-text">-</span>
                     <input class="to-page form-control form-control-sm" disabled>
                 </div>
-
-
-                </ul>
             </div>
         </div>
     </div>
+
+</div>
 </div>
 </body>
 </html>
