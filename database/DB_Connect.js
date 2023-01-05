@@ -1,12 +1,12 @@
 import config from '../configuration.json' assert {type: 'json'};
 import mysql from 'mysql'
-import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search } from './DataBase functionality.js'
+import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user, forgot_pass } from './DataBase functionality.js'
 
-export var connection = mysql.createConnection({
-    host: config.DB.host,
-    user: config.DB.user,
-    password: config.DB.password,
-    database: config.DB.db_name
+var connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 //check_connection(connection)
