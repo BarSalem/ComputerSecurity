@@ -2,7 +2,7 @@ import config from '../configuration.json' assert {type: 'json'};
 import mysql from 'mysql'
 import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search } from './DataBase functionality.js'
 
-var connection = mysql.createConnection({
+export var connection = mysql.createConnection({
     host: config.DB.host,
     user: config.DB.user,
     password: config.DB.password,

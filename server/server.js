@@ -1,6 +1,7 @@
 // Server main file
 import express from "express";
-import dotenv from "dotenv";
+import fs from "fs";
+import tls from "tls";
 import path from "path";
 import bodyParser from "body-parser";
 
@@ -17,7 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config({ path: __dirname + '/../.env' })
 app.use(express.static(path.join(__dirname, '/../front')));
 
 app.get('/', (req, res) => {
