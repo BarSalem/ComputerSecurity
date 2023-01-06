@@ -130,7 +130,8 @@ function createNewElement(tag, htmlClass, html,id) {
 function addEventListeners() {
     checkAllListener();
     navListeners();
-    deleteUsersListeners()
+    deleteUsersListeners();
+    searchBarListener();
 }
 
 function checkAllListener() {
@@ -164,15 +165,45 @@ function deleteUsersListeners(){
     $(".delete-user-btn").on("click",(e)=>{
         e.stopPropagation();
         let buttonID = $(e.target).closest('button').attr('id');
-        if(this.id == "delete-selected"){
-
-            console.log(buttonID);
-
+        let username;
+        let toDelete = [];
+        if(buttonID == "delete-selected"){
+            $(".check-one:checked").each(function() {
+                username = $(this).closest("tr").attr("id");
+                if(username === $(this).attr('id').replace("checkbox",""));
+                toDelete.push(username);
+            });
         }
         else{
-            console.log(buttonID)
+            username=$(e.target).closest("tr").attr("id");
+            if(username === buttonID.replace("delete-btn",""))
+                toDelete.push(username);
         }
+        deleteUsers(toDelete)
     })
+}
+
+function deleteUsers(list){
+    console.log(list.length)
+    //todo:send to backend list to delete :)
+}
+
+function searchBarListener(){
+    $("#search-bar").on("keydown",(e) => {
+        if(e.keyCode === 13)
+            sendSearchReq($(e.target).val(),1)
+
+    });
+}
+
+function sendSearchReq(input,startPage){
+
+    //todo:add url change
+    //add request FOR THE CORRECT PAGE AND INPUT
+}
+function removeEventListeners(){
+    $(".delete-user-btn").off("click");
+    $("#search-bar").off("keydown");
 }
 
 function goToPage(num) {
@@ -183,6 +214,7 @@ function goToPage(num) {
     removeData();
     addRowsToTable();
     addTableNav();
+    removeEventListeners();
     addEventListeners();
     let currentUrl = new URL(window.location.href);
     let params = new URLSearchParams(currentUrl.search);
