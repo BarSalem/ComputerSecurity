@@ -19,10 +19,10 @@ export var connection = mysql.createConnection({
 //await insert_client(connection, "Bar@gmail.com", "Bar", "Salem", "0525381648", "Holon");
 //await insert_client(connection, "Eli@gmail.com", "Eli", "Cohen", "0525881648", "Yehud");
 //await delete_client(connection, "Bar@gmail.com");
-console.log(await get_all_clients(connection, 0));
+// console.log(await get_all_clients(connection, 0));
 // console.log(await sort_by(connection, config.DB.tables.clients.fields.last_name));
-console.log(await search(connection, "b", 5))
+// console.log(await search(connection, "b", 5))
 
-connection.end()
+// connection.end()
 
 

@@ -40,6 +40,17 @@ app.get('/changepasswword', (req, res) => {
     res.status(200).send({ "message": "Change Password Page" });
 })
 
+app.post('/checkemail',async (req, res) => {
+    const activatedSuccessed = await check_email(connection, req.body.user_email)
+    console.log(activatedSuccessed)
+    if (activatedSuccessed) {
+        res.status(200).send({ "message": "Your Account has been activated! Log in again please" });
+    }
+    else {
+        res.status(200).send({ "message": "Something went wrong, please try again later!" });
+    }
+})
+
 app.get('/activation/:id', (req, res) => {
     const activatedSuccessed = async () => {
         const result = await activate_user(connection, user_email, req.params.id)
@@ -115,22 +126,20 @@ app.post('/change-password', (req, res) => {
 
 })
 
-app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+app.post('/login', async (req, res) => {
     const user_email = req.body.user_email
     const user_password = req.body.password
     const hashed_password = hashPassword(user_password)
     console.log(user_email, hashed_password)
-    const login_user_status = async () => {
-        const result = await authentication_login(connection, user_email, hashed_password)
-        return result
-    }
+    const login_user_status = await authentication_login(connection, user_email, hashed_password)
+    console.log(login_user_status)
     if (login_user_status) {
         passport.authenticate('local', { failureRedirect: '/' }),
-            res.status(200).send({ "message": "Login successed!" });
+            res.status(200).redirect('/info');
         //res.status(200).sendFile(path.join(__dirname + '/../front/'/*the main data screen */));
     }
     else {
-        res.status(200).send({ "message": "You must activate your user before logging in, Check your email!" });
+        res.status(200).redirect('/');
     }
 })
 
