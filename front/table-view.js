@@ -5,13 +5,15 @@ let totalRows;
 const itemsPerPage = 50;
 let startPage = new URL(location.href).searchParams.get('page');
 startPage = !startPage || Number(startPage) < 1 ? 1 : Number(startPage);
+let searchVal = new URL(location.href).searchParams.get('search');
+searchVal = searchVal?searchVal:"";
 $(document).ready(() => {
     //todo: delete
     createFakeReq();
     //todo: end delete
     //todo: remove '//'
 
-    //sendRequest(startPage);
+    //sendRequest(startPage,searchVal);// This request will get the data for the 50 rows in the page :)
 
     //todo: end remove '//'
     addRowsToTable();
@@ -19,8 +21,9 @@ $(document).ready(() => {
     addEventListeners();
 })
 
-function sendRequest(start) {
+function sendRequest(start,search) {
     let firstRow = (start - 1) * 50;
+
     //todo: add request;
 }
 
@@ -45,7 +48,7 @@ function createFakeReq() {
 
 function createFakeObject(list, int) {
     let newString = "";
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < int; i++) {
         newString += list[Math.floor(Math.random() * list.length)];
     }
     return newString;
@@ -80,6 +83,7 @@ function addTableNav() {
     let currEnd = Math.min(currStart + 50, totalRows);
     $('.from-page').val(currStart);
     $('.to-page').val(currEnd);
+    $("#search-bar").val(searchVal);
 }
 
 function removeData() {
@@ -150,13 +154,13 @@ function navListeners() {
         let id = e.target.id ? e.target.id : e.target.parentElement.id;
         switch (id) {
             case "next":
-                goToPage(startPage + 1);
+                goToPage(startPage + 1,searchVal);
                 break
             case "prev":
-                goToPage(startPage - 1);
+                goToPage(startPage - 1,searchVal);
                 break;
             default:
-                goToPage(Number(id.replace("page", "")));
+                goToPage(Number(id.replace("page", "")),searchVal);
         }
 
     });
@@ -184,32 +188,33 @@ function deleteUsersListeners(){
 }
 
 function deleteUsers(list){
-    console.log(list.length)
     //todo:send to backend list to delete :)
 }
 
 function searchBarListener(){
     $("#search-bar").on("keydown",(e) => {
         if(e.keyCode === 13)
-            sendSearchReq($(e.target).val(),1)
+            goToPage(1,$(e.target).val());
 
     });
 }
 
-function sendSearchReq(input,startPage){
-
-    //todo:add url change
-    //add request FOR THE CORRECT PAGE AND INPUT
-}
+// function sendSearchReq(startPage,input){
+//     console.log(input+' '+startPage);
+//     //todo:add url change
+//     //add request FOR THE CORRECT PAGE AND INPUT
+// }
 function removeEventListeners(){
     $(".delete-user-btn").off("click");
     $("#search-bar").off("keydown");
 }
 
-function goToPage(num) {
+function goToPage(num,searchValue) {
     startPage = num;
+    searchVal = searchValue;
     //todo:add request instead of fake request
-    // sendRequest(num);
+    // sendRequest(num,searchVal);
+    //todo:delete fake req
     createFakeReq();
     removeData();
     addRowsToTable();
@@ -218,7 +223,14 @@ function goToPage(num) {
     addEventListeners();
     let currentUrl = new URL(window.location.href);
     let params = new URLSearchParams(currentUrl.search);
-    params.set("page", num);
+    if (startPage > 1)
+        params.set("page", num);
+    else if(params.get("page"))
+        params.delete("page");
+    if(searchVal)
+        params.set("search", searchVal);
+    else if(params.get("search"))
+        params.delete("search");
     currentUrl.search = params.toString();
     window.history.replaceState({}, "", currentUrl.toString());
     $("#select-all").prop("checked", false);
