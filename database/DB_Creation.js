@@ -1,5 +1,5 @@
 import config from '../configuration.json' assert {type: 'json'};
-import mysql from 'mysql'
+import mysql from './mysql'
 
 
 var con = mysql.createConnection({
