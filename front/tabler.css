@@ -23239,3 +23239,15 @@ Antialiasing
     -webkit-font-smoothing: auto;
     -moz-osx-font-smoothing: auto;
 }
+
+.delete-user-btn {
+    border: none;
+    background-color: transparent;
+    color: #ff5a5f;
+    /*border-right: 3px;*/
+}
+
+.delete-user-btn:hover {
+    /*background-color: #ff5a5f;*/
+    color: white;
+}

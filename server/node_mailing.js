@@ -29,14 +29,15 @@ const sendConfirmationEmail = (name, email, confirmationCode) => {
     }).catch(err => console.log(err));
   };
 
-const sendChangePasswordName = (email, new_password) => {
+const sendChangePasswordName = (email, changingPasswordToken) => {
   transport.sendMail({
       from: user_mail,
       to: email,
       subject: "Your Password has been Changed!",
       html: `<h1>New Password</h1>
           <h2>New Password</h2>
-          <p>Thank you for reaching out. Your password has been changed to the next password: ${new_password}</p>
+          <p>Thank you for reaching out. In order to changing your password please click the following link</p>
+          <a href=http://localhost:8080/forgotpasswordtoken/${changingPasswordToken}> Click here</a>
           </div>`,
     }).catch(err => console.log(err));
   };

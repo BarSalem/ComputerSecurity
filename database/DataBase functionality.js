@@ -10,7 +10,7 @@ const check_connection = async (con) => con.connect((err) => {
 
 const authentication_login = async (con, email, password) => {
 
-    let sql_query = `SELECT email FROM users_details WHERE email = ? AND password = ?`;
+    let sql_query = `SELECT email FROM users_details WHERE email = ? AND password = ? AND activated = 1`;
 
     return new Promise((resolve, reject) => {
         con.query(sql_query, [email, password], (err, result) => {
@@ -168,6 +168,44 @@ const insert_user = async (con, email, first_name, last_name, phone_number, pass
 }
 
 
+const activate_user = async (con, email, url_token) => {
+
+    let sql_query_activate = `UPDATE users_details
+    SET activated = 1
+    WHERE email = ? AND creation_token = ?;`
+
+    return new Promise((resolve, reject) => {
+        con.query(sql_query_activate, [email, url_token], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            console.log("User activated...");
+            resolve(true)
+        });
+    });
+}
+
+
+const forgot_pass = async (con, email, temp_pass) => {
+    let sql_forgot_query = `UPDATE users_details
+    SET password = ?, activated = 0
+    WHERE email = ?;`
+
+    return new Promise(async (resolve, reject) => {
+        let emailExists = await check_email(con, email);
+        if (!emailExists) {
+            return reject("User is not exists!");
+        }
+        con.query(sql_forgot_query, [temp_pass, email], async (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(true)
+        })
+    })
+}
+
+
 const delete_client = async (con, email) => {
 
     let sql_query_users = `DELETE FROM clients WHERE email=?`;
@@ -282,4 +320,4 @@ const search = async (con, search_string) => {
 }
 
 
-export { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search }
+export { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user, forgot_pass }
