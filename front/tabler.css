@@ -23262,6 +23262,26 @@ Antialiasing
     display: none;
 }
 
+#terms-and-policy-trigger:checked ~ #terms-and-policy-modal{
+    display: block;
+}
+
+#terms-and-policy-trigger:checked ~ #terms-and-policy-modal-bg{
+    display: block;
+}
+
+#terms-and-policy-trigger{
+    display: none;
+}
+#terms-and-policy-label{
+    color: var(--tblr-link-color);
+    cursor:pointer;
+}
+#terms-and-policy-label:hover{
+    color: var(--tblr-link-hover-color);
+    text-decoration: underline;
+}
+
 #forgot-password-trigger:checked ~ #forgot-password-modal{
     display: block;
 }
@@ -23292,4 +23312,7 @@ Antialiasing
 }
 .input-error::placeholder{
     color:darkred !important;
+}
+.input-label{
+    cursor: pointer;
 }
