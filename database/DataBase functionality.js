@@ -19,7 +19,7 @@ const authentication_login = async (con, email, password) => {
             }
             if (result.length != 0) {
                 console.log("inside authentication_login - true");
-                resolve(true)
+                resolve(result)
             }
             else {
                 console.log("inside authentication_login - false");
@@ -41,8 +41,7 @@ const check_email = async (con, email) => {
                 return reject(err);
             }
             if (result.length != 0) {
-                //resolve(result);
-                resolve(true)
+                resolve(true);
             }
             else {
                 resolve(false)
@@ -63,7 +62,6 @@ const delete_earliest_password = async (con, email) => {
                 return reject(err);
             }
             if (result.length != 0) {
-                //resolve(result);
                 console.log('inside delete_earliest_password = true');
                 resolve(true)
             }
@@ -88,10 +86,13 @@ const update_pass_history = async (con, email, password) => {
             if (err) {
                 return reject(err);
             }
-            if (result[0].passNum >= config.password.history_limit) {
-                //resolve(result);
+            num_of_pass = result[0].passNum;
+            if (num_of_pass >= config.password.history_limit) {
                 console.log('inside update_pass_history = pass history is full');
-                await delete_earliest_password(con, email);
+                while (num_of_pass >= config.password.history_limit) {
+                    await delete_earliest_password(con, email);
+                    num_of_pass -= 1;
+                }
                 con.query(sql_add_latest, [email, password], (err, result) => {
                     if (err) {
                         return reject(err)
@@ -237,7 +238,7 @@ const insert_client = async (con, email, first_name, last_name, phone_number, ci
 
             else {
                 console.log("inside insert_client - Added client...");
-                resolve(true);
+                resolve(result);
             }
         });
     });
@@ -274,17 +275,15 @@ const delete_user = async (con, email) => {
 }
 
 
-const get_all_clients = async (con) => {
-    let sql_get_table_query = `SELECT * FROM clients`;
+const get_all_clients = async (con, start) => {
+    let sql_get_table_query = `SELECT * FROM clients LIMIT 50 OFFSET ?`;
 
     return new Promise((resolve, reject) => {
-        con.query(sql_get_table_query, (err, result) => {
+        con.query(sql_get_table_query, [start], (err, result) => {
             if (err) {
                 return reject(err);
             }
-            else {
-                resolve(result)
-            }
+            resolve(result)
         })
     })
 }
@@ -305,10 +304,10 @@ const sort_by = async (con, column_name) => {
 }
 
 
-const search = async (con, search_string) => {
-    let sql_search_query = `SELECT * FROM clients WHERE email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR phone_number LIKE ? OR city LIKE ?`;
+const search = async (con, search_string, start) => {
+    let sql_search_query = `SELECT * FROM clients WHERE email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR phone_number LIKE ? OR city LIKE ? LIMIT 50 OFFSET ?`;
     return new Promise((resolve, reject) => {
-        con.query(sql_search_query, ["%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%"], (err, result) => {
+        con.query(sql_search_query, ["%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%", "%" + search_string + "%", start], (err, result) => {
             if (err) {
                 reject(err);
             }
