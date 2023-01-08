@@ -23244,10 +23244,52 @@ Antialiasing
     border: none;
     background-color: transparent;
     color: #ff5a5f;
-    /*border-right: 3px;*/
 }
 
 .delete-user-btn:hover {
-    /*background-color: #ff5a5f;*/
-    color: white;
+    color: whitesmoke;
+}
+
+#add-client-trigger:checked ~ #add-client-modal{
+    display: block;
+}
+
+#add-client-trigger:checked ~ #add-client-modal-bg{
+    display: block;
+}
+
+#add-client-trigger{
+    display: none;
+}
+
+#forgot-password-trigger:checked ~ #forgot-password-modal{
+    display: block;
+}
+
+#forgot-password-trigger:checked ~ #forgot-password-modal-bg{
+    display: block;
+}
+
+#email-sent{
+    color:green;
+}
+
+#forgot-password-label{
+    color: var(--tblr-link-color);
+    cursor:pointer;
+}
+#forgot-password-label:hover{
+    color: var(--tblr-link-hover-color);
+    text-decoration: underline;
+}
+
+#forgot-password-trigger{
+    display: none;
+}
+.input-error{
+    background: wheat !important;
+    color: red !important;
+}
+.input-error::placeholder{
+    color:darkred !important;
 }

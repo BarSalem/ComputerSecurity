@@ -34,6 +34,7 @@ function inputFlow(e){
 }
 
 function sendForms(){
+    $("#modal-content").submit()
     // todo:fill form
     console.log(`todo todo
 todo todo todo 

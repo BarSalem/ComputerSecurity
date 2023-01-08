@@ -6,7 +6,7 @@ const itemsPerPage = 50;
 let startPage = new URL(location.href).searchParams.get('page');
 startPage = !startPage || Number(startPage) < 1 ? 1 : Number(startPage);
 let searchVal = new URL(location.href).searchParams.get('search');
-searchVal = searchVal?searchVal:"";
+searchVal = searchVal ? searchVal : "";
 $(document).ready(() => {
     //todo: delete
     createFakeReq();
@@ -21,7 +21,7 @@ $(document).ready(() => {
     addEventListeners();
 })
 
-function sendRequest(start,search) {
+function sendRequest(start, search) {
     let firstRow = (start - 1) * 50;
 
     //todo: add request;
@@ -40,8 +40,9 @@ function createFakeReq() {
         let r = {};
         r.firstName = createFakeObject(letters, 6);
         r.lastName = createFakeObject(letters, 6);
+        r.city = createFakeObject(letters, 6);
         r.phoneNum = createFakeObject(numbers, 10);
-        r.userName = createFakeObject(letters, 6) + createFakeObject(numbers, 3);
+        r.email = createFakeObject(letters, 6) + createFakeObject(numbers, 3);
         req.push(r);
     }
 }
@@ -93,31 +94,32 @@ function removeData() {
 
 function addRow(r) {
     let checkboxTD = createNewElement("td", null, null);
-    let firstNameTD = createNewElement("td", null, r.firstName,"first-name"+r.userName);
-    let lastNameTD = createNewElement("td", null, r.lastName,"last-name"+r.userName);
-    let userNameTD = createNewElement("td", null, r.userName,"username"+r.userName);
-    let phoneNumTD = createNewElement("td", null, r.phoneNum,"phone-number"+r.userName);
-    let checkbox = createNewElement("input", "form-check-input m-0 align-middle check-one", null,"checkbox"+r.userName);
+    let firstNameTD = createNewElement("td", null, r.firstName, "first-name" + r.email);
+    let lastNameTD = createNewElement("td", null, r.lastName, "last-name" + r.email);
+    let emailTD = createNewElement("td", null, r.email, "email" + r.email);
+    let cityTD = createNewElement("td", null, r.city, "email" + r.email);
+    let phoneNumTD = createNewElement("td", null, r.phoneNum, "phone-number" + r.email);
+    let checkbox = createNewElement("input", "form-check-input m-0 align-middle check-one", null, "checkbox" + r.email);
     checkbox.type = "checkbox";
     $(checkboxTD).append(checkbox);
     let deleteTD = createNewElement("td", null, null);
-    deleteTD.title="Delete User"
+    deleteTD.title = "Delete User"
     let deleteIcon = createNewElement("button", "delete-user-btn", `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
    <circle cx="9" cy="7" r="4"></circle>
    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
    <path d="M17 9l4 4m0 -4l-4 4"></path>
-    </svg>`,"delete-btn"+r.userName);
+    </svg>`, "delete-btn" + r.email);
     deleteTD.append(deleteIcon);
-    let tdList = [checkboxTD, firstNameTD, lastNameTD, userNameTD, phoneNumTD, deleteTD];
-    let tr = createNewElement("tr",null,null,r.userName);
+    let tdList = [checkboxTD, firstNameTD, lastNameTD, emailTD, cityTD, phoneNumTD, deleteTD];
+    let tr = createNewElement("tr", null, null, r.email);
     tdList.forEach((td) => $(tr).append(td));
     $("#table-content").append(tr);
 
 
 }
 
-function createNewElement(tag, htmlClass, html,id) {
+function createNewElement(tag, htmlClass, html, id) {
     let el = document.createElement(tag);
     if (htmlClass) {
         let classes = htmlClass.split(" ");
@@ -126,7 +128,7 @@ function createNewElement(tag, htmlClass, html,id) {
         });
     }
     if (html) $(el).html(html);
-    if(id) el.id = id;
+    if (id) el.id = id;
     return el;
 
 }
@@ -136,6 +138,7 @@ function addEventListeners() {
     navListeners();
     deleteUsersListeners();
     searchBarListener();
+    addUserListener()
 }
 
 function checkAllListener() {
@@ -154,62 +157,94 @@ function navListeners() {
         let id = e.target.id ? e.target.id : e.target.parentElement.id;
         switch (id) {
             case "next":
-                goToPage(startPage + 1,searchVal);
+                goToPage(startPage + 1, searchVal);
                 break
             case "prev":
-                goToPage(startPage - 1,searchVal);
+                goToPage(startPage - 1, searchVal);
                 break;
             default:
-                goToPage(Number(id.replace("page", "")),searchVal);
+                goToPage(Number(id.replace("page", "")), searchVal);
         }
 
     });
 }
-function deleteUsersListeners(){
-    $(".delete-user-btn").on("click",(e)=>{
+
+function deleteUsersListeners() {
+    $(".delete-user-btn").on("click", (e) => {
         e.stopPropagation();
         let buttonID = $(e.target).closest('button').attr('id');
-        let username;
+        let email;
         let toDelete = [];
-        if(buttonID == "delete-selected"){
-            $(".check-one:checked").each(function() {
-                username = $(this).closest("tr").attr("id");
-                if(username === $(this).attr('id').replace("checkbox",""));
-                toDelete.push(username);
+        if (buttonID == "delete-selected") {
+            $(".check-one:checked").each(function () {
+                email = $(this).closest("tr").attr("id");
+                if (email === $(this).attr('id').replace("checkbox", "")) ;
+                toDelete.push(email);
             });
-        }
-        else{
-            username=$(e.target).closest("tr").attr("id");
-            if(username === buttonID.replace("delete-btn",""))
-                toDelete.push(username);
+        } else {
+            email = $(e.target).closest("tr").attr("id");
+            if (email === buttonID.replace("delete-btn", ""))
+                toDelete.push(email);
         }
         deleteUsers(toDelete)
     })
 }
 
-function deleteUsers(list){
+function deleteUsers(list) {
     //todo:send to backend list to delete :)
 }
 
-function searchBarListener(){
-    $("#search-bar").on("keydown",(e) => {
-        if(e.keyCode === 13)
-            goToPage(1,$(e.target).val());
+function searchBarListener() {
+    $("#search-bar").on("keydown", (e) => {
+        if (e.keyCode === 13)
+            goToPage(1, $(e.target).val());
 
     });
 }
 
-// function sendSearchReq(startPage,input){
-//     console.log(input+' '+startPage);
-//     //todo:add url change
-//     //add request FOR THE CORRECT PAGE AND INPUT
-// }
-function removeEventListeners(){
+function addUserListener() {
+    $(".modal-content").on("submit", (e) => {
+        e.preventDefault();
+        let dontSend = false;
+        let phoneNumberInput = $(e.target).find("input[name='phoneNum']");
+        phoneNumberInput.val(phoneNumberInput.val().replace(/[ -]/g, ""));
+        $(".modal-content input").each(function (){
+            if (!validateInput($(this).val(), $(this).attr("type")) || $(this).val() == "") {
+                dontSend = true;
+                $(this).addClass("input-error")
+            }
+        });
+        if(!dontSend){
+            //todo:add request here (add user)
+        }
+        debugger;
+    })
+}
+function validateInput(input,type){
+    switch (type){
+        case "text":
+            let nameRegEx = /^[a-zA-Z .'-]+$/;
+            return nameRegEx.test(input);
+
+        case "email":
+            let emailRegEx =/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            let domainRegEx= /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+            let XSSRegEx = /^[^<>&]*$/;
+            if(!emailRegEx.test(input) || !domainRegEx.test(input) || !XSSRegEx.test(input));
+                return true
+            return false
+        case "phone":
+            let phoneRegEx =/^[0-9]{9}$/;
+            return phoneRegEx.test(input);
+    }
+}
+
+function removeEventListeners() {
     $(".delete-user-btn").off("click");
     $("#search-bar").off("keydown");
 }
 
-function goToPage(num,searchValue) {
+function goToPage(num, searchValue) {
     startPage = num;
     searchVal = searchValue;
     //todo:add request instead of fake request
@@ -225,11 +260,11 @@ function goToPage(num,searchValue) {
     let params = new URLSearchParams(currentUrl.search);
     if (startPage > 1)
         params.set("page", num);
-    else if(params.get("page"))
+    else if (params.get("page"))
         params.delete("page");
-    if(searchVal)
+    if (searchVal)
         params.set("search", searchVal);
-    else if(params.get("search"))
+    else if (params.get("search"))
         params.delete("search");
     currentUrl.search = params.toString();
     window.history.replaceState({}, "", currentUrl.toString());
