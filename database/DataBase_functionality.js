@@ -422,3 +422,5 @@ export {
   check_login_attempts,
   update_password_token
 };
+
+export { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user, forgot_pass }
