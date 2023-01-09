@@ -86,7 +86,7 @@ const update_pass_history = async (con, email, password) => {
             if (err) {
                 return reject(err);
             }
-            num_of_pass = result[0].passNum;
+            let num_of_pass = result[0].passNum;
             if (num_of_pass >= config.password.history_limit) {
                 console.log('inside update_pass_history = pass history is full');
                 while (num_of_pass >= config.password.history_limit) {
@@ -169,14 +169,14 @@ const insert_user = async (con, email, first_name, last_name, phone_number, pass
 }
 
 
-const activate_user = async (con, email, url_token) => {
+const activate_user = async (con, url_token) => {
 
     let sql_query_activate = `UPDATE users_details
     SET activated = 1
-    WHERE email = ? AND creation_token = ?;`
+    WHERE creation_token = ?;`
 
     return new Promise((resolve, reject) => {
-        con.query(sql_query_activate, [email, url_token], (err, result) => {
+        con.query(sql_query_activate, [, url_token], (err, result) => {
             if (err) {
                 return reject(err);
             }
