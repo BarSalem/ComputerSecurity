@@ -1,13 +1,8 @@
 // Server main file
 import express from "express";
-import fs from "fs";
-import tls from "tls";
 import path from "path";
 import bodyParser from "body-parser";
-import https from "https";
-import session from 'express-session';
 import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -24,21 +19,16 @@ import { check_connection, authentication_login, check_email, insert_user, delet
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-passport.use(new LocalStrategy(
-    function (user_email, password, done) {
-        const login_user_status = async () => {
-            const result = await authentication_login(connection, user_email, hashPassword(password))
-            return result
-        }
-        if (login_user_status) { return done(null, login_user_status); }
-        else { return done(null, false); }
-    }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use(express.static(path.join(__dirname, '/../front')));
 
 app.get('/', (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/../front/login-page.html'));
+})
+
+app.get('/info', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/table-view.html'));
 })
 
@@ -49,8 +39,6 @@ app.get('/register', (req, res) => {
 app.get('/changepasswword', (req, res) => {
     res.status(200).send({ "message": "Change Password Page" });
 })
-
-app.get('/forgotpasswordtoken/:id', (req, res) => { })
 
 app.get('/activation/:id', (req, res) => {
     const activatedSuccessed = async () => {
@@ -145,9 +133,6 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (re
         res.status(200).send({ "message": "You must activate your user before logging in, Check your email!" });
     }
 })
-
-// console.log(await insert_client(connection, "email11213", "first_name", "last_name", "052521", "city"))
-// console.log(await get_all_clients())
 
 // const server = https.createServer(options, app);
 
