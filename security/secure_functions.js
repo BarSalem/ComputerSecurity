@@ -4,7 +4,6 @@ const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+")
 const isValidEmail = (email) => emailRegex.test(email);
 
 const checkPassword = (password) => {
-    
     const passwordRegex = new RegExp(config.password.characters.regex)
     const lowercaseRegex = new RegExp(config.password.characters.lowercase);
     const uppercaseRegex = new RegExp(config.password.characters.uppercase);
