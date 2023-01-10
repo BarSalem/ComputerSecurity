@@ -1,3 +1,4 @@
+console.log("git test:)");
 $(document).ready( () => {
     addEventListeners();
 })

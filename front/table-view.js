@@ -215,6 +215,23 @@ function addUserListener() {
             }
         });
         if(!dontSend){
+            const data = {
+                fname: $(".modal-content input[name='firstName']"),
+                lname: $(".modal-content input[name='lastName']"),
+                user_email: $(".modal-content input[name='email']"),
+                password: $(".modal-content input[name='password']"),
+                phone_number: $(".modal-content input[name='phoneNum']"),
+
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/register',
+                data: data,
+                success: function(response) {
+                    console.log(response);
+                }
+            });
             //todo:add request here (add user)
         }
         debugger;
