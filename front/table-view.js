@@ -211,7 +211,9 @@ function addUserListener() {
         $(".modal-content input").each(function (){
             if (!validateInput($(this).val(), $(this).attr("type")) || $(this).val() == "") {
                 dontSend = true;
-                $(this).addClass("input-error")
+                $(this).addClass("input-error");
+            }else{
+                $(this).removeClass("input-error")
             }
         });
         if(!dontSend){

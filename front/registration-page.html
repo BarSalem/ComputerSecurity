@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
     <script src="registration-page.js"></script>
     <link rel="stylesheet" href="tabler.css">
 </head>
@@ -43,6 +44,7 @@
                             <label class="form-label">Password</label>
                             <input id="password" type="password" class="form-control 5" placeholder="Your password"
                                    autocomplete="off">
+                            <meter id="password-strength-meter" class="invisible" min="0" max="4"></meter><label id="password-strength-text" class="form-label invisible"></label>
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Confirm password</label>
