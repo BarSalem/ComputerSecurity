@@ -7,6 +7,7 @@
   <title>Title</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
   <script src="login-page.js"></script>
+  <script src="registration-page.js"></script>
   <link rel="stylesheet" href="tabler.css">
 </head>
 <body class="theme-dark">
@@ -22,8 +23,16 @@
               <input id="email" type="email" class="form-control" placeholder="your@email.com" required>
             </div>
             <div class="mb-2">
-              <label class="form-label">Name</label>
-              <input id="Name" type="text" class="form-control" placeholder="Johny B. Good" required>
+              <label class="form-label">First name</label>
+              <input id="firsst-name" type="text" class="form-control" placeholder="Johny B." required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Last name</label>
+              <input id="last-name" type="text" class="form-control" placeholder="Good" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Phone number</label>
+              <input id="phone-number" type="tel" class="form-control" name="phoneNum" placeholder="XXX-XXX-XXXX" pattern="([0-9]{3}-[0-9]{3}-[0-9]{4})|([0-9]{3} [0-9]{3} [0-9]{4}|[0-9]{10})" title="Phone number should be in the format XXX-XXX-XXXX, XXX XXX XXXX or XXXXXXXXXX" required>
             </div>
             <div class="mb-2">
               <label class="form-label">Password</label>
@@ -31,7 +40,7 @@
                 <input id="password" type="password" class="form-control" placeholder="Your password"
                        autocomplete="off">
                 <span id="show-password" title="Show password" class="input-group-text">
-                                <a href="#" class="link-secondary" data-bs-toggle="tooltip" aria-label="Show password"
+                                <a class="link-secondary" data-bs-toggle="tooltip" aria-label="Show password"
                                    data-bs-original-title="Show password"><!-- Download SVG icon from http://tabler-icons.io/i/eye -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                          viewBox="0 0 24 24"
@@ -66,7 +75,7 @@
             <label for="terms-and-policy-input" class="input-label"> I read amd agree to the</label>
             <label class="" for="terms-and-policy-trigger" id="terms-and-policy-label">terms and policy.</label>
           <div class="form-footer">
-            <button id="login" class="btn btn-primary w-100">Sign in</button>
+            <button id="sign-up" class="btn btn-primary w-100" title="Please confirm the terms and policy." disabled>Sign up</button>
           </div>
         </div>
       </div>
