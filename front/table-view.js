@@ -1,4 +1,4 @@
-let req = [];
+var req = []
 const numbers = [];
 const letters = [];
 let totalRows;
@@ -13,7 +13,7 @@ $(document).ready(() => {
     //todo: end delete
     //todo: remove '//'
 
-    //sendRequest(startPage,searchVal);// This request will get the data for the 50 rows in the page :)
+    // sendRequest(startPage,searchVal);// This request will get the data for the 50 rows in the page :)
 
     //todo: end remove '//'
     addRowsToTable();
@@ -23,10 +23,19 @@ $(document).ready(() => {
 
 function sendRequest(start, search) {
     let firstRow = (start - 1) * 50;
-
     $.ajax({
+        type: "GET",
+        url: "http://localhost:8080/getclients",
+        dataType: 'JSON',
+        complete: function (res) {
+            req = res.responseJSON;
+         }
+     })
+    //todo: add request;
+
+    /*$.ajax({
         type: 'POST',
-        url: 'http://localhost:5500',
+        url: 'http://localhost:8080',
         data: {
             start: firstRow,
             search: search
@@ -37,35 +46,34 @@ function sendRequest(start, search) {
         error: function(error) {
             console.log(error);
         }
-    });
+    });*/
 }
-
-function createFakeReq() {
-    req = [];
+async function createFakeReq() {
     totalRows = 999;
+    var clients_array = await $.ajax({
+        type: "GET",
+        url: "http://localhost:8080/getclients",
+        dataType: 'JSON',
+        complete: function (res) {
+            return res.responseJSON;
+         }
+     })
     for (let i = 0; i < 10; i++) {
         numbers.push(i)
     }
     for (let i = 97; i <= 122; i++) {
         letters.push(String.fromCharCode(i))
     }
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < clients_array.length; i++) {
         let r = {};
-        r.firstName = createFakeObject(letters, 6);
-        r.lastName = createFakeObject(letters, 6);
-        r.city = createFakeObject(letters, 6);
-        r.phoneNum = createFakeObject(numbers, 10);
-        r.email = createFakeObject(letters, 6) + createFakeObject(numbers, 3);
+        r.firstName = clients_array[i].first_name
+        r.lastName = clients_array[i].last_name
+        r.city = clients_array[i].city
+        r.phoneNum = clients_array[i].phone_number
+        r.email = clients_array[i].email
         req.push(r);
     }
-}
-
-function createFakeObject(list, int) {
-    let newString = "";
-    for (let i = 0; i < int; i++) {
-        newString += list[Math.floor(Math.random() * list.length)];
-    }
-    return newString;
+    console.log(req)
 }
 
 function addRowsToTable() {
@@ -285,7 +293,7 @@ function goToPage(num, searchValue) {
     //todo:add request instead of fake request
     // sendRequest(num,searchVal);
     //todo:delete fake req
-    createFakeReq();
+    // createFakeReq(); to avoid generating same data few times
     removeData();
     addRowsToTable();
     addTableNav();

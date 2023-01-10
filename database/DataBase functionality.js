@@ -145,7 +145,7 @@ const update_password = async (con, email, new_pass) => {
 
 const insert_user = async (con, email, first_name, last_name, phone_number, password, creation_token) => {
 
-    let sql_query_users = `INSERT INTO communication_ltd.users_details (email,first_name,last_name,phone_number,password,creation_token, activated) VALUES (?, ?, ?, ?, ?, ?, 0)`;
+    let sql_query_users = `INSERT INTO communication_ltd.users_details (email,first_name,last_name,phone_number,password,creation_token, activated, password_token, pass_token_activated) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0)`;
 
     return new Promise((resolve, reject) => {
         con.query(sql_query_users, [email, first_name, last_name, phone_number, password, creation_token], async (err, result) => {
@@ -171,12 +171,12 @@ const insert_user = async (con, email, first_name, last_name, phone_number, pass
 
 const activate_user = async (con, url_token) => {
 
-    let sql_query_activate = `UPDATE users_details
+    let sql_query_activate = `UPDATE communication_ltd.users_details
     SET activated = 1
     WHERE creation_token = ?;`
 
     return new Promise((resolve, reject) => {
-        con.query(sql_query_activate, [, url_token], (err, result) => {
+        con.query(sql_query_activate, [url_token], (err, result) => {
             if (err) {
                 return reject(err);
             }

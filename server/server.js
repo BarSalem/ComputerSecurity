@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/login-page.html'));
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', async (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/table-view.html'));
 })
 
@@ -36,19 +36,13 @@ app.get('/register', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/registration-page.html'));
 })
 
-app.get('/changepasswword', (req, res) => {
-    res.status(200).send({ "message": "Change Password Page" });
+app.get('/forgotpassword', (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/../front/forgot-password.html'));
 })
 
-app.post('/checkemail',async (req, res) => {
-    const activatedSuccessed = await check_email(connection, req.body.user_email)
-    console.log(activatedSuccessed)
-    if (activatedSuccessed) {
-        res.status(200).send({ "message": "Your Account has been activated! Log in again please" });
-    }
-    else {
-        res.status(200).send({ "message": "Something went wrong, please try again later!" });
-    }
+app.get('/changepassword/:id', (req, res) => {
+    // activate password token of user
+    res.status(200).sendFile(path.join(__dirname + '/../front/change-password.html'));
 })
 
 app.get('/activation/:id', async (req, res) => {
@@ -62,30 +56,28 @@ app.get('/activation/:id', async (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-    const {fname, lname, user_email, password, phone_number} = req.body
+    const {fname, lname, user_email, user_password, user_phone} = req.body
+    console.log(user_email, fname, lname, user_phone, user_password)
     const hashed_password = hashPassword(password)
     const user_token = generateRandomString()
     const create_user_status = await insert_user(connection, user_email, fname, lname, phone_number, hashed_password, user_token)
     console.log(create_user_status)
     if (create_user_status) {
         sendConfirmationEmail(fname, user_email, user_token)
-        res.status(200).redirect('/');
+        res.status(200).send({result: 'redirect', url:'/', message:"Go activate your account in the email"})
     }
     else {
         res.status(200).redirect('/register');
     }
 })
 
-app.post('/forgot-password', (req, res) => {
+app.post('/forgot-password', async (req, res) => {
     const user_email = req.body.user_email
-    const user_email_exist = async () => {
-        const result = await check_email(connection, user_email)
-        return result
-    }
+    const user_email_exist = await check_email(connection, user_email)
     if (user_email_exist) {
         const user_password_token = generateRandomString()
         sendChangePasswordName(user_email, user_password_token)
-        res.status(200).send({ "message": "Changing password page" });
+        res.status(200).send({ "message": "Go check you email for the new password" });
     }
     else {
         res.status(200).send({ "message": "No user found for the email you mentioned!" });
@@ -110,10 +102,10 @@ app.post('/login', async (req, res) => {
     const hashed_password = hashPassword(user_password)
     const login_user_status = await authentication_login(connection, user_email, hashed_password)
     if (login_user_status) {
-        res.status(200).redirect('/info')
+        res.status(200).send({result: 'redirect', url:'/info'})
     }
     else {
-        res.status(200).redirect('/');
+        res.status(200).send({error: "Wrong credentials"})
     }
 })
 
