@@ -56,7 +56,8 @@ app.get('/activation/:id', async (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-    const {fname, lname, user_email, password, phone_number} = req.body
+    const {fname, lname, user_email, user_password, user_phone} = req.body
+    console.log(user_email, fname, lname, user_phone, user_password)
     const hashed_password = hashPassword(password)
     const user_token = generateRandomString()
     const create_user_status = await insert_user(connection, user_email, fname, lname, phone_number, hashed_password, user_token)
