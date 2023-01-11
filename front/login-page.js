@@ -1,4 +1,3 @@
-console.log("git test:)");
 $(document).ready( () => {
     addEventListeners();
 })
@@ -8,7 +7,6 @@ function addEventListeners(){
     $("#login").on("click",login);
     $("#change-password").on("click", sendEmail); 
     formSubmitListener();
-
 }
 
 function togglePW(){

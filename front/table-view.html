@@ -25,7 +25,7 @@
                     <input type="checkbox" id="add-client-trigger">
                     <div class="modal modal-blur fade show" id="add-client-modal">
                         <div class="modal-dialog page-center">
-                            <form class="modal-content" action="/insert_client" method="post">
+                            <form class="modal-content" action="/add-client" method="post" id="addClient">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Add Clients</h5>
                                     <label for="add-client-trigger" class="btn-close"
@@ -33,30 +33,26 @@
                                 </div>
                                 <div class="modal-body">
                                     <label class="form-label">enter first name</label>
-                                    <input autocomplete="off" type="text" class="form-control" name="firstName"
+                                    <input autocomplete="off" id="firsst-name" type="text" class="form-control" name="firstName"
                                            placeholder="John" required>
                                     <label class="form-label">enter last name</label>
-                                    <input autocomplete="off" type="text" class="form-control" name="lastName"
+                                    <input autocomplete="off" id="last-name" type="text" class="form-control" name="lastName"
                                            placeholder="Smith" required>
                                     <label class="form-label">enter email</label>
-                                    <input autocomplete="off" type="email" class="form-control" name="email"
+                                    <input autocomplete="off" id="email" type="email" class="form-control" name="email"
                                            placeholder="name@example.com" required>
-                                    <label class="form-label">enter city</label>
-                                    <input autocomplete="off" type="text" class="form-control" name="city"
+                                    <label class="form-label" >enter city</label>
+                                    <input autocomplete="off" id="city" type="text" class="form-control" name="city"
                                            placeholder="Nof HaGalil" required>
                                     <label class="form-label">enter phone number</label>
-                                    <input autocomplete="off" type="tel" class="form-control" name="phoneNum"
-                                           placeholder="XXX-XXX-XXXX"
-                                           pattern="([0-9]{3}-[0-9]{3}-[0-9]{4})|([0-9]{3} [0-9]{3} [0-9]{4}|[0-9]{10})"
-                                           title="Phone number should be in the format XXX-XXX-XXXX, XXX XXX XXXX or XXXXXXXXXX"
-                                           required>
+                                    <input autocomplete="off" id="phoneNum" type="tel" class="form-control" name="phoneNum" required>
                                     <div class="text-center h-3">
                                         <label id="client added" class="invisible">An email has been sent
                                             to:yourMail</label>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-primary ms-auto">
+                                    <button class="btn btn-primary ms-auto" id="insert-user">
                                         <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              class="icon icon-tabler icon-tabler-mail" width="24"
