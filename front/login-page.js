@@ -58,7 +58,7 @@ function formSubmitListener(){
     $("#forgot-password-form").on("submit", (e) =>{
         e.preventDefault()
     let user_email1 = document.getElementById("forgot-pass").value;
-    if(!isValidEmail(user_email)){
+    if(!isValidEmail(user_email1)){
         alert("Invalid email address format");
         return;
     }else
@@ -74,17 +74,18 @@ function sendEmail() {
 }
 
 function sendPOSTRequestlogin(user_email, user_password) {
-    console.log("user_email: " + user_email);
-    console.log("user_password: " + user_password);
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:5500/login-page',
+        url: 'http://localhost:8080/login',
         data: {
-            email: user_email,
+            user_email: user_email,
             password: user_password
         },
         success: function(response) {
-            console.log(response);
+            if (response.result == 'redirect') window.location.replace("http://localhost:8080" + response.url);
+            else{
+                alert(response.error);
+            }
         },
         error: function(error) {
             console.log(error);
@@ -93,15 +94,14 @@ function sendPOSTRequestlogin(user_email, user_password) {
 }
 
 function sendPOSTRequestfogotpas(user_email) {
-    console.log("user_email: " + user_email);
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:5500/login-page',
+        url: 'http://localhost:8080/forgot-password',
         data: {
-            email: user_email
+            user_email: user_email
         },
         success: function(response) {
-            console.log(response);
+            alert(response.message)
         },
         error: function(error) {
             console.log(error);

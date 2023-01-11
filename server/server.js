@@ -9,7 +9,7 @@ import { dirname } from 'path';
 import { sendChangePasswordName, sendConfirmationEmail } from '../server/node_mailing.js'
 import { connection } from '../database/DB_Connect.js'
 import { hashPassword, generateRandomString } from "./encryption.js";
-import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search } from '../database/DataBase functionality.js'
+import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user } from '../database/DataBase functionality.js'
 
 /*const options = {
     key: fs.readFileSync('localhost.key'),
@@ -28,23 +28,25 @@ app.get('/', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/login-page.html'));
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', async (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/table-view.html'));
 })
 
 app.get('/register', (req, res) => {
-    res.status(200).send({ "message": "Register Page" });
+    res.status(200).sendFile(path.join(__dirname + '/../front/registration-page.html'));
 })
 
-app.get('/changepasswword', (req, res) => {
-    res.status(200).send({ "message": "Change Password Page" });
+app.get('/forgotpassword', (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/../front/forgot-password.html'));
 })
 
-app.get('/activation/:id', (req, res) => {
-    const activatedSuccessed = async () => {
-        const result = await activate_user(connection, user_email, req.params.id)
-        return result
-    }
+app.get('/changepassword/:id', (req, res) => {
+    // activate password token of user
+    res.status(200).sendFile(path.join(__dirname + '/../front/change-password.html'));
+})
+
+app.get('/activation/:id', async (req, res) => {
+    const activatedSuccessed = await activate_user(connection, req.params.id)
     if (activatedSuccessed) {
         res.status(200).send({ "message": "Your Account has been activated! Log in again please" });
     }
@@ -53,85 +55,76 @@ app.get('/activation/:id', (req, res) => {
     }
 })
 
-app.post('/register', (req, res) => {
-    const fname = req.body.fname
-    const lname = req.body.lname
-    const user_email = req.body.user_email
-    const user_password = req.body.password
-    const user_phone = req.body.phone_number
-    const hashed_password = hashPassword(user_password)
+app.post('/register', async (req, res) => {
+    const {fname, lname, user_email, user_password, user_phone} = req.body
+    console.log(user_email, fname, lname, user_phone, user_password)
+    const hashed_password = hashPassword(password)
     const user_token = generateRandomString()
-    const create_user_status = async () => {
-        const result = await insert_user(connection, user_email, fname, lname, user_phone, hashed_password, user_token)
-        return result
-    }
+    const create_user_status = await insert_user(connection, user_email, fname, lname, phone_number, hashed_password, user_token)
+    console.log(create_user_status)
     if (create_user_status) {
         sendConfirmationEmail(fname, user_email, user_token)
-        res.status(200).send({ "message": "You need to activate your account, Visit your mail and look for activation code" });
+        res.status(200).send({result: 'redirect', url:'/', message:"Go activate your account in the email"})
     }
     else {
-        res.status(200).send({ "message": "Account with this email already exists" });
+        res.status(200).redirect('/register');
     }
 })
 
-app.post('/forgot-password', (req, res) => {
+app.post('/forgot-password', async (req, res) => {
     const user_email = req.body.user_email
-    const user_email_exist = async () => {
-        const result = await check_email(connection, user_email)
-        return result
-    }
+    const user_email_exist = await check_email(connection, user_email)
     if (user_email_exist) {
         const user_password_token = generateRandomString()
         sendChangePasswordName(user_email, user_password_token)
-        res.status(200).send({ "message": "Changing password page" });
+        res.status(200).send({ "message": "Go check you email for the new password" });
     }
     else {
         res.status(200).send({ "message": "No user found for the email you mentioned!" });
     }
 })
 
-app.post('/change-password', (req, res) => {
-    const newPassword = req.body.newPassword
-    const userEmail = req.body.userEmail
-    const user_email_exist = async () => {
-        const result = await check_email(connection, userEmail)
-        return result
-    }
+app.post('/change-password', async (req, res) => {
+    const newPassword = req.body.new_password
+    const userEmail = req.body.user_email
+    const new_hashed_password = hashPassword(newPassword)
+    const user_email_exist = await update_password(connection, userEmail, new_hashed_password)
     if (user_email_exist) {
-        const changedUserPassword = async () => {
-            const result = await update_password(connection, userEmail, newPassword)
-            return result
-        }
-        if (changedUserPassword) {
-            res.status(200).send({ "message": "Your password has been changed!" });
-        }
-        else {
+        res.status(200).redirect('/');}
+    else {
             res.status(404).send({ "message": "Something went wrong..." });
         }
-    }
-    else {
-        res.status(200).send({ "message": "Wrong user email, user doesn't exist!" });
-    }
+    })
 
-})
-
-app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+app.post('/login', async (req, res) => {
     const user_email = req.body.user_email
     const user_password = req.body.password
     const hashed_password = hashPassword(user_password)
-    console.log(user_email, hashed_password)
-    const login_user_status = async () => {
-        const result = await authentication_login(connection, user_email, hashed_password)
-        return result
-    }
+    const login_user_status = await authentication_login(connection, user_email, hashed_password)
     if (login_user_status) {
-        passport.authenticate('local', { failureRedirect: '/' }),
-            res.status(200).send({ "message": "Login successed!" });
-        //res.status(200).sendFile(path.join(__dirname + '/../front/'/*the main data screen */));
+        res.status(200).send({result: 'redirect', url:'/info'})
     }
     else {
-        res.status(200).send({ "message": "You must activate your user before logging in, Check your email!" });
+        res.status(200).send({error: "Wrong credentials"})
     }
+})
+
+app.post('/add-client', async (req, res) => {
+    const {email, fname, lname, phone,city} = req.body;
+    const insert_client_status = await insert_client(connection, email, fname, lname, phone,city)
+    if (insert_client_status) {
+        const all_clients= await get_all_clients(connection, 0)
+        res.status(200).send(all_clients);
+    }
+    else {
+        res.status(200).redirect('/');
+    }
+})
+
+app.get('/getclients', async (req, res) => {
+        const all_clients= await get_all_clients(connection, 0)
+        res.status(200).send(all_clients);
+
 })
 
 // const server = https.createServer(options, app);
