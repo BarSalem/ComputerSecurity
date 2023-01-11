@@ -7,12 +7,14 @@ let startPage = new URL(location.href).searchParams.get('page');
 startPage = !startPage || Number(startPage) < 1 ? 1 : Number(startPage);
 let searchVal = new URL(location.href).searchParams.get('search');
 searchVal = searchVal ? searchVal : "";
+getAllClients();
 $(document).ready(() => {
     //todo: delete
-    createFakeReq();
+    $("#insert-user").on("click", () => {$("#addClient").submit();});
+    formSubmitListener();
     //todo: end delete
     //todo: remove '//'
-
+    
     // sendRequest(startPage,searchVal);// This request will get the data for the 50 rows in the page :)
 
     //todo: end remove '//'
@@ -48,12 +50,36 @@ function sendRequest(start, search) {
         }
     });*/
 }
-async function createFakeReq() {
+
+
+function formSubmitListener(){
+    // Get the form input values
+    
+    $("#addClient").on("submit", (e) =>{
+        e.preventDefault();
+    addUserListener();
+    });
+
+    $("#forgot-password-form").on("submit", (e) =>{
+        e.preventDefault()
+    let user_email1 = document.getElementById("forgot-pass").value;
+    if(!isValidEmail(user_email1)){
+        alert("Invalid email address format");
+        return;
+    }else
+        sendPOSTRequestfogotpas(user_email1);
+    });
+
+}
+
+
+async function getAllClients() {
     totalRows = 999;
     var clients_array = await $.ajax({
         type: "GET",
         url: "http://localhost:8080/getclients",
         dataType: 'JSON',
+        async: false,
         complete: function (res) {
             return res.responseJSON;
          }
@@ -164,7 +190,6 @@ function addEventListeners() {
      });
    
     searchBarListener();
-    addUserListener()
 }
 
 function checkAllListener() {
@@ -212,11 +237,22 @@ function deleteUsersListeners() {
             if (email === buttonID.replace("delete-btn", ""))
                 toDelete.push(email);
         }
-        deleteUsers(toDelete)
+        deleteUsers(email)
     })
 }
 
-function deleteUsers(list) {
+function deleteUsers(email) {
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/del-client",
+        dataType: 'JSON',
+        data:{ email:email},
+        async: false,
+        complete: function (response) {
+            if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            location.reload();
+         }
+     })
     //todo:send to backend list to delete :)
 }
 
@@ -232,35 +268,31 @@ function addUserListener() {
     $(".modal-content").on("submit", (e) => {
         e.preventDefault();
         let dontSend = false;
-        let phoneNumberInput = $(e.target).find("input[name='phoneNum']");
-        phoneNumberInput.val(phoneNumberInput.val().replace(/[ -]/g, ""));
-        $(".modal-content input").each(function (){
-            if (!validateInput($(this).val(), $(this).attr("type")) || $(this).val() == "") {
-                dontSend = true;
-                $(this).addClass("input-error")
-            }
-        });
+        let fname = document.getElementById("firsst-name").value;
+        let lname = document.getElementById("last-name").value;
+        let user_email = document.getElementById("email").value;
+        let city = document.getElementById("city").value;
+        let user_phone = document.getElementById("phoneNum").value;
         if(!dontSend){
             const data = {
-                fname: $(".modal-content input[name='firstName']"),
-                lname: $(".modal-content input[name='lastName']"),
-                user_email: $(".modal-content input[name='email']"),
-                password: $(".modal-content input[name='password']"),
-                phone_number: $(".modal-content input[name='phoneNum']"),
-
+                fname: fname,
+                lname: lname,
+                email: user_email,
+                city: city,
+                phone: user_phone
             };
-
+            console.log(data);
             $.ajax({
                 type: 'POST',
-                url: '/register',
+                url: '/add-client',
                 data: data,
                 success: function(response) {
-                    console.log(response);
+                    if (response.result) window.location.replace("http://localhost:8080" + response.url);
+                    location.reload();
                 }
             });
             //todo:add request here (add user)
         }
-        debugger;
     })
 }
 function validateInput(input,type){
@@ -293,7 +325,7 @@ function goToPage(num, searchValue) {
     //todo:add request instead of fake request
     // sendRequest(num,searchVal);
     //todo:delete fake req
-    // createFakeReq(); to avoid generating same data few times
+    // getAllClients(); to avoid generating same data few times
     removeData();
     addRowsToTable();
     addTableNav();
@@ -313,4 +345,5 @@ function goToPage(num, searchValue) {
     window.history.replaceState({}, "", currentUrl.toString());
     $("#select-all").prop("checked", false);
     window.scrollTo(0, 0);
+    location.reload();
 }

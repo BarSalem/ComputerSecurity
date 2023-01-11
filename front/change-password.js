@@ -2,10 +2,8 @@ $(document).ready( () => {
     addEventListeners();
 })
 function addEventListeners(){
-    $("#show-password").on("click",togglePW);
     $(".form-control").on("keypress",inputFlow);    
-    $("#sign-up").on("click",login);
-    $("#change-password").on("click", sendEmail); 
+    $("#login").on("click",login);
     formSubmitListener();
 }
 
@@ -22,37 +20,21 @@ function togglePW(){
     }
 }
 
-function inputFlow(e){
-    let password=$("#password");
-    let login=$("#login");
-    if(e.charCode == 13){
-        if(e.target.id=="email") {
-            password.focus()
-        }
-        else if(e.target.id =="password"){
-            login.click()
-        }
-    }
-}
-
 
 function formSubmitListener(){
     // Get the form input values
     
-    $("#signup-form").on("submit", (e) =>{
+    $("#login-form").on("submit", (e) =>{
         e.preventDefault()
-    let fname = document.getElementById("firsst-name").value;
-    let lname = document.getElementById("last-name").value;
-    let user_email = document.getElementById("email").value;
-    let user_password = document.getElementById("password").value;
-    let user_phone = document.getElementById("phone-number").value;
+    let user_email = document.getElementById("password").value;
     console.log(user_email)
     if(!isValidEmail(user_email)){
         alert("Invalid email address format");
         return;
     }
     else{
-        sendPOSTRequestRequest(fname, lname, user_email, user_password, user_phone);
+        let user_password = document.getElementById("password").value;
+        sendPOSTRequestlogin(user_password);
     }
     });
 
@@ -74,20 +56,19 @@ function sendEmail() {
     $("#forgot-password-form").submit();
 }
 
-function sendPOSTRequestRequest(fname, lname, user_email, user_password, user_phone) {
+function sendPOSTRequestlogin(user_email, user_password) {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/register',
+        url: 'http://localhost:8080/login',
         data: {
-            fname:fname,
-            lname:lname,
             user_email: user_email,
-            user_password: user_password,
-            user_phone:user_phone
+            password: user_password
         },
         success: function(response) {
             if (response.result == 'redirect') window.location.replace("http://localhost:8080" + response.url);
-            alert(response.message);
+            else{
+                alert(response.error);
+            }
         },
         error: function(error) {
             console.log(error);
