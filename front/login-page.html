@@ -18,7 +18,7 @@
                 </div>
                 <h2 class="h2 text-center mb-4">Login to the best page ever</h2>
                 <div>
-                    <form action="/login" method="post">
+                    <form action="/login" method="post" id="login-form">
                         <div class="mb-3">
                             <label class="form-label">Email address</label>
                             <input id="email" type="email" class="form-control" placeholder="your@email.com"
@@ -49,7 +49,7 @@
                         <input type="checkbox" id="forgot-password-trigger">
                         <div class="modal modal-blur fade show" id="forgot-password-modal">
                             <div class="modal-dialog modal-dialog-centered">
-                                    <form class="modal-content" action="/change-mail" method="post">
+                                    <form class="modal-content" action="/change-password" id="forgot-password-form" method="post">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Forgot Password</h5>
                                             <label for="forgot-password-trigger" class="btn-close"
@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <label class="form-label">Please enter your email</label><br>
-                                            <input type="email" class="form-control" placeholder="Your@email.come">
+                                            <input type="email" class="form-control" id="forgot-pass" placeholder="Your@email.come">
                                             <div class="text-center h-3">
                                                 <label id="email-sent" class="invisible">An email has been sent
                                                     to:yourMail</label>
