@@ -24,7 +24,20 @@ $(document).ready(() => {
 function sendRequest(start, search) {
     let firstRow = (start - 1) * 50;
 
-    //todo: add request;
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:5500',
+        data: {
+            start: firstRow,
+            search: search
+        },
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }
 
 function createFakeReq() {
@@ -137,6 +150,11 @@ function addEventListeners() {
     checkAllListener();
     navListeners();
     deleteUsersListeners();
+    $('.delete-btnzpymgd665').click(function() {
+        let id = $(this).data('id');
+        // here you need to call your delete function and pass the id as argument
+     });
+   
     searchBarListener();
     addUserListener()
 }
