@@ -178,7 +178,8 @@ const activate_user = async (con, url_token) => {
     return new Promise((resolve, reject) => {
         con.query(sql_query_activate, [url_token], (err, result) => {
             if (err) {
-                return reject(err);
+                console.log(err)
+                return false;
             }
             console.log("User activated...");
             resolve(true)

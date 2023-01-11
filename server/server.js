@@ -45,29 +45,34 @@ app.get('/changepassword/:id', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/change-password.html'));
 })
 
+app.get('/activationsuccess', async (req, res) => {
+    res.status(200).sendFile(path.join(__dirname + '/../front/activation-page.html'));
+})
+
 app.get('/activation/:id', async (req, res) => {
     const activatedSuccessed = await activate_user(connection, req.params.id)
+    console.log(activatedSuccessed)
     if (activatedSuccessed) {
-        res.status(200).send({ "message": "Your Account has been activated! Log in again please" });
+        res.status(200).redirect('/activationsuccess');
     }
     else {
-        res.status(200).send({ "message": "Something went wrong, please try again later!" });
+        res.status(404).send({ "message": "Something went wrong, please try again later!" });
     }
 })
 
 app.post('/register', async (req, res) => {
     const {fname, lname, user_email, user_password, user_phone} = req.body
-    console.log(user_email, fname, lname, user_phone, user_password)
-    const hashed_password = hashPassword(password)
+    console.log(user_email, fname, lname, user_password, user_phone)
+    const hashed_password = hashPassword(user_password)
     const user_token = generateRandomString()
-    const create_user_status = await insert_user(connection, user_email, fname, lname, phone_number, hashed_password, user_token)
+    const create_user_status = await insert_user(connection, user_email, fname, lname, user_phone, hashed_password, user_token)
     console.log(create_user_status)
     if (create_user_status) {
         sendConfirmationEmail(fname, user_email, user_token)
         res.status(200).send({result: 'redirect', url:'/', message:"Go activate your account in the email"})
     }
     else {
-        res.status(200).redirect('/register');
+        res.status(200).send({message:"This email is already used"});
     }
 })
 
@@ -77,17 +82,14 @@ app.post('/forgot-password', async (req, res) => {
     if (user_email_exist) {
         const user_password_token = generateRandomString()
         sendChangePasswordName(user_email, user_password_token)
-        res.status(200).send({ "message": "Go check you email for the new password" });
     }
-    else {
-        res.status(200).send({ "message": "No user found for the email you mentioned!" });
-    }
+    res.status(200).send({ "message": "If the user exist, the mail has been sent!" });
 })
 
 app.post('/change-password', async (req, res) => {
     const newPassword = req.body.new_password
-    const userEmail = req.body.user_email
     const new_hashed_password = hashPassword(newPassword)
+    console.log('check' + new_hashed_password)
     const user_email_exist = await update_password(connection, userEmail, new_hashed_password)
     if (user_email_exist) {
         res.status(200).redirect('/');}
@@ -113,13 +115,23 @@ app.post('/add-client', async (req, res) => {
     const {email, fname, lname, phone,city} = req.body;
     const insert_client_status = await insert_client(connection, email, fname, lname, phone,city)
     if (insert_client_status) {
-        const all_clients= await get_all_clients(connection, 0)
-        res.status(200).send(all_clients);
+        res.status(200).send({result: 'redirect', url:'/info'});
     }
     else {
         res.status(200).redirect('/');
     }
 })
+
+app.post('/del-client', async (req, res) => {
+    const insert_client_status = await delete_client(connection, req.body.email)
+    if (insert_client_status) {
+        res.status(200).send({result: 'redirect', url:'/info'});
+    }
+    else {
+        res.status(200).redirect('/');
+    }
+})
+
 
 app.get('/getclients', async (req, res) => {
         const all_clients= await get_all_clients(connection, 0)

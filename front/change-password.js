@@ -2,10 +2,8 @@ $(document).ready( () => {
     addEventListeners();
 })
 function addEventListeners(){
-    $("#show-password").on("click",togglePW);
-    $(".form-control").on("keypress",inputFlow);
+    $(".form-control").on("keypress",inputFlow);    
     $("#login").on("click",login);
-    $("#change-password").on("click", sendEmail);
     formSubmitListener();
 }
 
@@ -22,34 +20,21 @@ function togglePW(){
     }
 }
 
-function inputFlow(e){
-    let password=$("#password");
-    let login=$("#login");
-    if(e.charCode == 13){
-        if(e.target.id=="email") {
-            password.focus()
-        }
-        else if(e.target.id =="password"){
-            login.click()
-        }
-    }
-}
-
 
 function formSubmitListener(){
     // Get the form input values
-
+    
     $("#login-form").on("submit", (e) =>{
         e.preventDefault()
-    let user_email = document.getElementById("email").value;
-
+    let user_email = document.getElementById("password").value;
+    console.log(user_email)
     if(!isValidEmail(user_email)){
         alert("Invalid email address format");
         return;
     }
     else{
         let user_password = document.getElementById("password").value;
-        sendPOSTRequestlogin(user_email, user_password);
+        sendPOSTRequestlogin(user_password);
     }
     });
 
