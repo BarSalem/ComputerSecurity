@@ -37,7 +37,7 @@ const sendChangePasswordName = (email, changingPasswordToken) => {
       html: `<h1>New Password</h1>
           <h2>New Password</h2>
           <p>Thank you for reaching out. In order to changing your password please click the following link</p>
-          <a href=http://localhost:8080/forgotpasswordtoken/${changingPasswordToken}> Click here</a>
+          <a href=http://localhost:8080/changepassword:${changingPasswordToken}> Click here</a>
           </div>`,
     }).catch(err => console.log(err));
   };

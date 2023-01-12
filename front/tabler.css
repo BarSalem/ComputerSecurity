@@ -23316,3 +23316,15 @@ Antialiasing
 .input-label{
     cursor: pointer;
 }
+
+#change-password-trigger:checked ~ #change-password-modal{
+    display: block;
+}
+
+#change-password-trigger:checked ~ #change-password-modal-bg{
+    display: block;
+}
+
+#change-password-trigger{
+    display: none;
+}
