@@ -9,7 +9,21 @@ import { dirname } from 'path';
 import { sendChangePasswordName, sendConfirmationEmail } from '../server/node_mailing.js'
 import { connection } from '../database/DB_Connect.js'
 import { hashPassword, generateRandomString } from "./encryption.js";
-import { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user } from '../database/DataBase functionality.js'
+import {   check_connection,
+    authentication_login,
+    check_user_email,
+    check_client_email,
+    insert_user,
+    delete_user,
+    update_password,
+    insert_client,
+    delete_client,
+    get_all_clients,
+    sort_by,
+    search,
+    activate_user,
+    forgot_pass,
+    check_login_attempts } from '../database/DataBase_functionality.js'
 
 /*const options = {
     key: fs.readFileSync('localhost.key'),
@@ -40,10 +54,10 @@ app.get('/forgotpassword', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/forgot-password.html'));
 })
 
-app.get('/changepassword/:id', (req, res) => {
+/*app.get('/:id', (req, res) => {
     // activate password token of user
     res.status(200).sendFile(path.join(__dirname + '/../front/change-password.html'));
-})
+})*/
 
 app.get('/activationsuccess', async (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/activation-page.html'));
@@ -78,8 +92,9 @@ app.post('/register', async (req, res) => {
 
 app.post('/forgot-password', async (req, res) => {
     const user_email = req.body.user_email
-    const user_email_exist = await check_email(connection, user_email)
+    const user_email_exist = await check_user_email(connection, user_email)
     if (user_email_exist) {
+        forgot_password_succ = forgot_pass(connection, user_email, user_password_token)
         const user_password_token = generateRandomString()
         sendChangePasswordName(user_email, user_password_token)
     }
@@ -90,9 +105,9 @@ app.post('/change-password', async (req, res) => {
     const newPassword = req.body.new_password
     const new_hashed_password = hashPassword(newPassword)
     console.log('check' + new_hashed_password)
-    const user_email_exist = await update_password(connection, userEmail, new_hashed_password)
-    if (user_email_exist) {
-        res.status(200).redirect('/');}
+    //const user_email_exist = await update_password(connection, userEmail, new_hashed_password)
+    if (true) {
+        res.status(200).send({result: 'redirect', url:'/', message:"Please log-in with the new password"});}
     else {
             res.status(404).send({ "message": "Something went wrong..." });
         }
@@ -114,6 +129,7 @@ app.post('/login', async (req, res) => {
 app.post('/add-client', async (req, res) => {
     const {email, fname, lname, phone,city} = req.body;
     const insert_client_status = await insert_client(connection, email, fname, lname, phone,city)
+    console.log(insert_client_status)
     if (insert_client_status) {
         res.status(200).send({result: 'redirect', url:'/info'});
     }
@@ -139,8 +155,8 @@ app.post('/del-client', async (req, res) => {
 
 app.get('/getclients', async (req, res) => {
         const all_clients= await get_all_clients(connection, 0)
+        console.log(all_clients)
         res.status(200).send(all_clients);
-
 })
 
 // const server = https.createServer(options, app);

@@ -22,7 +22,7 @@ const authentication_login = async (con, email, password) => {
       }
       if (result.length != 0) {
         console.log("inside authentication_login - true");
-        return resolve(result);
+        return resolve(result); 
       } else {
         console.log("inside authentication_login - false");
         return resolve(false);
@@ -150,7 +150,7 @@ const insert_user = async (
   password,
   creation_token
 ) => {
-  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, activated) VALUES (?, ?, ?, ?, ?, 0, 0, ?, 0, 0)`;
+  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, login_time, activated) VALUES (?, ?, ?, ?, ?, 0, 0, ?, 0, NOW(), 0)`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -178,7 +178,7 @@ const insert_user = async (
 const activate_user = async (con, url_token) => {
   const sql_query_activate = `UPDATE users_details
     SET activated = 1
-    WHERE email = ? AND creation_token = ?;`;
+    WHERE creation_token = ?;`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_activate, [url_token], (err, result) => {
@@ -378,5 +378,6 @@ export {
   sort_by,
   search,
   activate_user,
-  forgot_pass
+  forgot_pass,
+  check_login_attempts
 };
