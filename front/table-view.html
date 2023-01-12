@@ -10,7 +10,7 @@
 <body class="theme-dark">
 <div clas="page page-center">
     <div class="container container-xxl py-4">
-        <h2 class="h2 text-center mb-4">Our Lovely Clients</h2>
+        <h2 class="h2 text-center mb-4" id="info_headear">Our Lovely Clients</h2>
         <div class="card card-md">
             <div class="card-body border-bottom py-3">
                 <div class="d-flex">
@@ -20,15 +20,46 @@
                         <span class="input-group-text">-</span>
                         <input class="to-page form-control form-control-sm" disabled>
                     </div>
-                    <label id="add-client-label" for="add-client-trigger" class="btn btn-primary ms-auto btn-sm">Add
-                        Client</label>
+                    <label id="add-client-label" for="add-client-trigger" class="btn btn-primary ms-auto btn-sm">Change Password</label>
                     <input type="checkbox" id="add-client-trigger">
                     <div class="modal modal-blur fade show" id="add-client-modal">
                         <div class="modal-dialog page-center">
-                            <form class="modal-content" action="/add-client" method="post" id="addClient">
+                            <form class="modal-content" action="/add-client" method="post" id="change-password-form">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Change Password</h5>
+                                    <label for="add-client-trigger" class="btn-close"
+                                           data-bs-dismiss="modal" aria-label="Close"></label>
+                                </div>
+                                <div class="modal-body">
+
+                                    <label class="form-label">Enter email</label>
+                                    <input autocomplete="off" id="change-password-email" type="email" class="form-control" name="email"
+                                           placeholder="name@example.com" required>
+                                    <label class="form-label">Enter old password</label>
+                                    <input autocomplete="off" id="old-password" type="password" class="form-control" name="oldPass"
+                                           placeholder="********" required>
+                                    <label class="form-label">Enter new password</label>
+                                    <input autocomplete="off" id="new-password" type="password" class="form-control" name="newPass"
+                                           placeholder="********" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary ms-auto" id="change-password-button">
+                                        Change password
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                    <label id="change-password-label" for="change-password-trigger" class="btn btn-primary ms-auto btn-sm">Add
+                        Client</label>
+                    <input type="checkbox" id="change-password-trigger">
+                    <div class="modal modal-blur fade show" id="change-password-modal">
+                        <div class="modal-dialog page-center">
+                            <form class="modal-content" action="/change-password" method="post" id="addClient">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Add Clients</h5>
-                                    <label for="add-client-trigger" class="btn-close"
+                                    <label for="change-password-trigger" class="btn-close"
                                            data-bs-dismiss="modal" aria-label="Close"></label>
                                 </div>
                                 <div class="modal-body">
@@ -63,7 +94,7 @@
                                             <rect x="3" y="5" width="18" height="14" rx="2"></rect>
                                             <polyline points="3 7 12 13 21 7"></polyline>
                                         </svg>
-                                        Send reset link
+                                        Add client
                                     </button>
                                 </div>
                             </form>

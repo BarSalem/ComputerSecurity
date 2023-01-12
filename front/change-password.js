@@ -36,10 +36,13 @@ function login() {
   }
 
 function sendPOSTRequestChangePassword(new_password) {
+    const all_url = window.location.href.split(':')
+    const token = all_url[all_url.length - 1]
     $.ajax({
         type: 'POST',
         url: 'http://localhost:8080/change-password',
         data: {
+            token:token,
             new_password: new_password,
         },
         success: function(response) {
