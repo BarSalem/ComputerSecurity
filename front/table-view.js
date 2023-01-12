@@ -12,7 +12,7 @@ $(document).ready(() => {
     //todo: delete
     $("#insert-user").on("click", () => {$("#AddClient").submit();});
     $("#change-password-button").on("click", () =>{$("#change-password-form").submit();})
-    $("search-bar").on("click", () =>{$("#change-password-form").submit();})
+    $("search-user-button").on("click", () =>{$("#search-form").submit();})
     formSubmitListener();
     //todo: end delete
     //todo: remove '//'
@@ -67,9 +67,9 @@ function formSubmitListener(){
         changeUserPassword();
     });
 
-    $("#search_user_form").on("submit", (e) =>{
+    $("#search-form").on("submit", (e) =>{
         e.preventDefault();
-        changeUserPassword();
+        searchAccount();
     });
 
     $("#forgot-password-form").on("submit", (e) =>{
@@ -95,12 +95,21 @@ function searchAccount() {
                 url: '/searchclient',
                 data: data,
                 success: function(response) {
-                    if (response.result) {
-                        alert(response.message)
-                        window.location.replace("http://localhost:8080" + response.url);
+                    req=[]
+                    clients_array = response.clients
+                    for (let i = 0; i < clients_array.length; i++) {
+                        let r = {};
+                        r.firstName = clients_array[i].first_name
+                        r.lastName = clients_array[i].last_name
+                        r.city = clients_array[i].city
+                        r.phoneNum = clients_array[i].phone_number
+                        r.email = clients_array[i].email
+                        req.push(r);
                     }
+                    addRowsToTable()
                 }
             });
+            
             //todo:add request here (add user)
 }
 

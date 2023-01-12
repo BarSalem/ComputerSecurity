@@ -64,6 +64,21 @@ const check_user_email = async (con, email) => {
   });
 };
 
+const get_user_name = async (con, email) => {
+  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = ?`;
+
+  return new Promise((resolve, reject) => {
+    con.query(sql_query, [email], (err, result) => {
+      if (err) {
+        console.log("Oops... ERROR - something went wrong", err);
+        return resolve(false);
+      }
+      let name = result[0].first_name + " " + result[0].last_name
+      return resolve(name)
+    });
+  });
+};
+
 const check_client_email = async (con, email) => {
   const sql_query = `SELECT email FROM clients WHERE email = ?`;
 
@@ -134,6 +149,7 @@ const update_pass_history = async (con, email, password) => {
 };
 
 const update_password = async (con, email, old_pass, new_pass) => {
+const update_password = async (con, email, old_pass, new_pass) => {
   const sql_update_query = `UPDATE users_details
   SET password = ? , pass_token_activated = 1
   WHERE email = ? AND password = ?;`;
@@ -158,6 +174,28 @@ const update_password = async (con, email, old_pass, new_pass) => {
     });
   });
 };
+
+const update_password_token = async (con, new_pass, pass_token) => {
+  const sql_update_query = `UPDATE users_details SET password = ? , pass_token_activated = 1 WHERE password_token = ? AND pass_token_activated = 0;`;   
+  const get_email_by_token = `SELECT email FROM communication_ltd.users_details WHERE password_token = ?`; 
+  return new Promise(async (resolve, reject) => {
+    con.query(sql_update_query, [new_pass, pass_token], async (err, result) => {
+      if (err) {         
+      console.log("Oops... ERROR - something went wrong", err);         
+      return resolve(false);       
+      }     
+    });     
+    con.query(get_email_by_token, [pass_token], async (err, result) => {       
+      console.log(123);       
+      const email=result[0].email       
+      console.log(email);       
+      console.log("inside update_password_token - done!");       
+      const update_history = await update_pass_history(con, email, new_pass)       
+      return resolve(update_history);     
+    });   
+  }); 
+};
+
 
 const update_password_token = async (con, new_pass, pass_token) => {
   const sql_update_query = `UPDATE users_details SET password = ? , pass_token_activated = 1 WHERE password_token = ? AND pass_token_activated = 0;`;   
@@ -468,6 +506,9 @@ export {
   get_all_clients,
   sort_by,
   search,
+  get_user_name,
   activate_user,
-  forgot_pass
+  forgot_pass,
+  check_login_attempts,
+  update_password_token
 };
