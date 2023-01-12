@@ -15,6 +15,10 @@ const authentication_login = async (con, email, password) => {
       console.log("email is not exists...");
       return resolve(false);
     }
+    let login_attempts = await check_login_attempts(con, email);
+    if (login_attempts > config.login.num_of_login_attempts) {
+      console.log("Too many login attempts... you have been blocked!");
+    }
     con.query(sql_query, [email, password], (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
@@ -22,7 +26,7 @@ const authentication_login = async (con, email, password) => {
       }
       if (result.length != 0) {
         console.log("inside authentication_login - true");
-        return resolve(result); 
+        return resolve(result);
       } else {
         console.log("inside authentication_login - false");
         return resolve(false);
@@ -42,21 +46,6 @@ const check_user_email = async (con, email) => {
       }
       return resolve(result.length !== 0);
 
-    });
-  });
-};
-
-const get_user_name = async (con, email) => {
-  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = ?`;
-
-  return new Promise((resolve, reject) => {
-    con.query(sql_query, [email], (err, result) => {
-      if (err) {
-        console.log("Oops... ERROR - something went wrong", err);
-        return resolve(false);
-      }
-      let name = result[0].first_name + " " + result[0].last_name
-      return resolve(name)
     });
   });
 };
@@ -416,11 +405,6 @@ export {
   get_all_clients,
   sort_by,
   search,
-  get_user_name,
   activate_user,
-  forgot_pass,
-  check_login_attempts,
-  update_password_token
+  forgot_pass
 };
-
-export { check_connection, authentication_login, check_email, insert_user, delete_user, update_password, insert_client, delete_client, get_all_clients, sort_by, search, activate_user, forgot_pass }
