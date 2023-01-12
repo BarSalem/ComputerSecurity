@@ -10,7 +10,9 @@ searchVal = searchVal ? searchVal : "";
 getAllClients();
 $(document).ready(() => {
     //todo: delete
-    $("#insert-user").on("click", () => {$("#addClient").submit();});
+    $("#insert-user").on("click", () => {$("#AddClient").submit();});
+    $("#change-password-button").on("click", () =>{$("#change-password-form").submit();})
+    $("search-bar").on("click", () =>{$("#change-password-form").submit();})
     formSubmitListener();
     //todo: end delete
     //todo: remove '//'
@@ -60,6 +62,16 @@ function formSubmitListener(){
     addUserListener();
     });
 
+    $("#change-password-form").on("submit", (e) =>{
+        e.preventDefault();
+        changeUserPassword();
+    });
+
+    $("#search_user_form").on("submit", (e) =>{
+        e.preventDefault();
+        changeUserPassword();
+    });
+
     $("#forgot-password-form").on("submit", (e) =>{
         e.preventDefault()
     let user_email1 = document.getElementById("forgot-pass").value;
@@ -70,6 +82,56 @@ function formSubmitListener(){
         sendPOSTRequestfogotpas(user_email1);
     });
 
+}
+
+function searchAccount() {
+        let search_string = document.getElementById("search-bar").value;
+        const data = {
+                search_string: search_string
+            };
+            console.log(data);
+            $.ajax({
+                type: 'POST',
+                url: '/searchclient',
+                data: data,
+                success: function(response) {
+                    if (response.result) {
+                        alert(response.message)
+                        window.location.replace("http://localhost:8080" + response.url);
+                    }
+                }
+            });
+            //todo:add request here (add user)
+}
+
+function changeUserPassword() {
+    $(".modal-content").on("submit", (e) => {
+        e.preventDefault();
+        let dontSend = false;
+        let user_email = document.getElementById("change-password-email").value;
+        let user_old_password = document.getElementById("old-password").value;
+        let user_new_password = document.getElementById("new-password").value;
+        if(!dontSend){
+            const data = {
+                email: user_email,
+                user_old_password: user_old_password,
+                user_new_password: user_new_password
+            };
+            console.log(data);
+            $.ajax({
+                type: 'POST',
+                url: '/changepasswordlogged',
+                data: data,
+                success: function(response) {
+                    if (response.result) {
+                        alert(response.message)
+                        window.location.replace("http://localhost:8080" + response.url);
+                    }
+                }
+            });
+            //todo:add request here (add user)
+        }
+    })
 }
 
 
@@ -260,7 +322,7 @@ function searchBarListener() {
     $("#search-bar").on("keydown", (e) => {
         if (e.keyCode === 13)
             goToPage(1, $(e.target).val());
-
+            $("#search_user_form").submit();
     });
 }
 
