@@ -4,7 +4,7 @@ import { check_connection, authentication_login, check_email, insert_user, delet
 import dotenv from "dotenv";
 dotenv.config()
 
-export var connection = mysql.createConnection({
+var connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
