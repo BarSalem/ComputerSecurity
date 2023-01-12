@@ -15,10 +15,6 @@ const authentication_login = async (con, email, password) => {
       console.log("email is not exists...");
       return resolve(false);
     }
-    let login_attempts = await check_login_attempts(con, email);
-    if (login_attempts > config.login.num_of_login_attempts) {
-      console.log("Too many login attempts... you have been blocked!");
-    }
     con.query(sql_query, [email, password], (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
