@@ -23250,6 +23250,19 @@ Antialiasing
     color: whitesmoke;
 }
 
+#change-password-trigger:checked ~ #change-password-modal{
+    display: block;
+}
+
+#change-password-trigger:checked ~ #change-password-modal-bg{
+    display: block;
+}
+
+#change-password-trigger{
+    display: none;
+}
+
+
 #add-client-trigger:checked ~ #add-client-modal{
     display: block;
 }

@@ -20,15 +20,49 @@
                         <span class="input-group-text">-</span>
                         <input class="to-page form-control form-control-sm" disabled>
                     </div>
-                    <label id="add-client-label" for="add-client-trigger" class="btn btn-primary ms-auto btn-sm">Add
-                        Client</label>
+                    <label id="add-client-label" for="add-client-trigger" class="btn btn-primary ms-auto btn-sm">Change Password</label>
                     <input type="checkbox" id="add-client-trigger">
                     <div class="modal modal-blur fade show" id="add-client-modal">
                         <div class="modal-dialog page-center">
                             <form class="modal-content" action="/add-client" method="post" id="addClient">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Add Clients</h5>
+                                    <h5 class="modal-title">Change Password</h5>
                                     <label for="add-client-trigger" class="btn-close"
+                                           data-bs-dismiss="modal" aria-label="Close"></label>
+                                </div>
+                                <div class="modal-body">
+
+                                    <label class="form-label">Enter email</label>
+                                    <input autocomplete="off" id="change-password-email" type="email" class="form-control" name="email"
+                                           placeholder="name@example.com" required>
+                                    <label class="form-label">Enter old password</label>
+                                    <input autocomplete="off" id="old-password" type="password" class="form-control" name="oldPass"
+                                           placeholder="********" required>
+                                    <label class="form-label">Enter new password</label>
+                                    <input autocomplete="off" id="new-password" type="password" class="form-control" name="newPass"
+                                           placeholder="********" required>
+                                    <label class="form-label">verify new password</label>
+                                    <input autocomplete="off" id="new-password-redo" type="password" class="form-control" name="newPassRedo"
+                                           placeholder="********" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary ms-auto" id="change-password-button">
+                                        Change password
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                    <label id="change-password-label" for="change-password-trigger" class="btn btn-primary ms-auto btn-sm">Add
+                        Client</label>
+                    <input type="checkbox" id="change-password-trigger">
+                    <div class="modal modal-blur fade show" id="change-password-modal">
+                        <div class="modal-dialog page-center">
+                            <form class="modal-content" action="/change-password" method="post" id="addClient">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add Clients</h5>
+                                    <label for="change-password-trigger" class="btn-close"
                                            data-bs-dismiss="modal" aria-label="Close"></label>
                                 </div>
                                 <div class="modal-body">
