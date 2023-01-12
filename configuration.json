@@ -1,9 +1,17 @@
 {
     "password": {
         "length": 8,
-        "filter_characters": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()_-+={[}]|\\:;\"'<,>.?/",
+        "chars": {
+            "uppercase": true,
+            "lowercase": true,
+            "numbers": true,
+            "special": true
+        },
         "history_limit": 3,
-        "avoid_sequence": []
+        "avoid_sequence": [
+            "abc",
+            "123"
+        ]
     },
     "login": {
         "num_of_login_attempts": 3
