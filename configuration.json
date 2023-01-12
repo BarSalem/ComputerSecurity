@@ -1,12 +1,11 @@
 {
     "password": {
         "length": 8,
-        "characters": {
-            "regex": "^[A-Za-z\\d@$!%*?&]+$",
-            "uppercase": "[A-Z]",
-            "lowercase": "[a-z]",
-            "numbers": "\\d",
-            "special": "[@$!%*?&]"
+        "chars": {
+            "uppercase": true,
+            "lowercase": true,
+            "numbers": true,
+            "special": true
         },
         "history_limit": 3,
         "avoid_sequence": [
