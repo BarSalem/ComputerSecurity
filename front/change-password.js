@@ -46,8 +46,13 @@ function sendPOSTRequestChangePassword(new_password) {
             new_password: new_password,
         },
         success: function(response) {
-            alert(response.message)
-            if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            if (response.error){
+                alert(response.error)
+            }
+            else{
+                alert(response.message)
+                if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            }
         },
         error: function(error) {
             console.log(error);

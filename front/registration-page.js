@@ -86,8 +86,13 @@ function sendPOSTRequestRequest(fname, lname, user_email, user_password, user_ph
             user_phone:user_phone
         },
         success: function(response) {
-            if (response.result == 'redirect') window.location.replace("http://localhost:8080" + response.url);
-            alert(response.message);
+            if (response.error){
+                alert(response.error)
+            }
+            else{
+                if (response.result == 'redirect') window.location.replace("http://localhost:8080" + response.url);
+                alert(response.message);
+            }
         },
         error: function(error) {
             console.log(error);

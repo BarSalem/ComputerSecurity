@@ -132,9 +132,12 @@ function changeUserPassword() {
                 url: '/changepasswordlogged',
                 data: data,
                 success: function(response) {
-                    if (response.result) {
+                    if (response.error){
+                        alert(response.error)
+                    }
+                    else{
                         alert(response.message)
-                        window.location.replace("http://localhost:8080" + response.url);
+                        if (response.redirect) window.location.replace("http://localhost:8080" + response.url);
                     }
                 }
             });

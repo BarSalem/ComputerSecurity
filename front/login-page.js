@@ -80,14 +80,9 @@ function sendPOSTRequestlogin(user_email, user_password) {
             password: user_password
         },
         success: function(response) {
-            if (response.result == 'redirect') {
-                alert("Welcome to Our Lovely Clients page " + response.name)
-                $("#info_headear").val("Our Lovely Clients   " + response.name);
-                window.location.replace("http://localhost:8080" + response.url);
-                }
-            else{
-                alert(response.error);
-            }
+            alert("Welcome to Our Lovely Clients page " + response.name)
+            $("#info_headear").val("Our Lovely Clients   " + response.name);
+            window.location.replace("http://localhost:8080" + response.url);
         },
         error: function(error) {
             console.log(error);

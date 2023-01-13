@@ -11,6 +11,7 @@ import { dirname } from 'path';
 import { sendChangePasswordName, sendConfirmationEmail } from '../server/node_mailing.js'
 import { connection } from '../database/DB_Connect.js'
 import { hashPassword, generateRandomString } from "./encryption.js";
+import { checkPassword } from "../security/secure_functions.js";
 import {   check_connection,get_user_name,
     authentication_login,
     check_user_email,
@@ -80,6 +81,8 @@ app.get('/activation/:id', async (req, res) => {
 app.post('/register', async (req, res) => {
     const {fname, lname, user_email, user_password, user_phone} = req.body
     console.log(user_email, fname, lname, user_password, user_phone)
+    const is_valid_password = checkPassword(user_password)
+    if(is_valid_password === 'all required elements'){
     const hashed_password = hashPassword(user_password)
     const user_token = generateRandomString()
     const create_user_status = await insert_user(connection, user_email, fname, lname, user_phone, hashed_password, user_token)
@@ -90,6 +93,9 @@ app.post('/register', async (req, res) => {
     }
     else {
         res.status(200).send({message:"This email is already used"});
+    }}
+    else{
+        res.status(200).send({result: 'redirect', url:'/', error: is_valid_password})
     }
 })
 
@@ -110,6 +116,8 @@ app.post('/change-password', async (req, res) => {
     const token = req.body.token
     const newPassword = req.body.new_password
     const new_hashed_password = hashPassword(newPassword)
+    const is_valid_password = checkPassword(newPassword)
+    if(is_valid_password === 'all required elements'){
     const user_email_exist = await update_password_token(connection, new_hashed_password, token)
     console.log(user_email_exist);
     if (user_email_exist) {
@@ -117,20 +125,24 @@ app.post('/change-password', async (req, res) => {
     else {
             res.status(404).send({ "message": "Something went wrong..." });
         }
+    }
+    else{
+        res.status(200).send({error: is_valid_password})
+    }
     })
 
 app.post('/login', async (req, res) => {
     const user_email = req.body.user_email
     const user_password = req.body.password
-    const hashed_password = hashPassword(user_password)
-    const login_user_status = await authentication_login(connection, user_email, hashed_password)
-    if (login_user_status) {
+        const hashed_password = hashPassword(user_password)
+        const login_user_status = await authentication_login(connection, user_email, hashed_password)
+        if (login_user_status) {
         const user_name = await get_user_name(connection,user_email)
         res.status(200).send({result: 'redirect', url:'/info', name: user_name})
-    }
-    else {
+        }
+        else {
         res.status(200).send({error: "Wrong credentials"})
-    }
+        }
 })
 
 app.post('/add-client', async (req, res) => {
@@ -159,34 +171,18 @@ app.post('/changepasswordlogged', async (req, res) => {
     const {email, user_old_password, user_new_password} = req.body
     const hashed_old_password = hashPassword(user_old_password)
     const hashed_new_password = hashPassword(user_new_password)
-    const insert_client_status = await update_password(connection, email, hashed_old_password, hashed_new_password)
-    if (insert_client_status) {
-        res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
+    const is_valid_password = checkPassword(user_new_password)
+    if(is_valid_password === 'all required elements'){
+        const insert_client_status = await update_password(connection, email, hashed_old_password, hashed_new_password)
+        if (insert_client_status) {
+            res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
+        }
+        else {
+            res.status(200).redirect({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
+        }
     }
     else {
-        res.status(200).redirect('/');
-    }
-})
-
-app.post('/searchclient', async (req,res) =>{
-    const specific_clients = await search(connection,req.body.search_string,0)
-    console.log(specific_clients);
-    if(specific_clients) res.status(200).send({clients:specific_clients});
-})
-app.post('/changepasswordlogged', async (req, res) => {
-    const {email, user_old_password, user_new_password} = req.body
-    const hashed_old_password = hashPassword(user_old_password)
-    const hashed_new_password = hashPassword(user_new_password)
-    const insert_client_status = await update_password(connection, email, hashed_old_password, hashed_new_password)
-    console.log(insert_client_status)
-    if(insert_client_status === 'Wrong'){
-        res.status(200).send({result: 'redirect', url:'/', message:'You cant use one of your last 3 passwords, Please choose another one'});
-    }
-    if (insert_client_status) {
-        res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
-    }
-    else {
-        res.status(200).redirect('/');
+        res.status(200).send({result: 'redirect', url:'/', error: is_valid_password})
     }
 })
 
@@ -200,11 +196,6 @@ app.get('/getclients', async (req, res) => {
         const all_clients= await get_all_clients(connection, 0)
         console.log(all_clients)
         res.status(200).send(all_clients);
-})
-
-app.post('/temp', async (req,res) =>{
-    const deleted_user = await delete_user(connection, req.body.email);
-    if(deleted_user) res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
 })
 
 app.post('/temp', async (req,res) =>{
