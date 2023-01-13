@@ -74,15 +74,20 @@ function sendEmail() {
 function sendPOSTRequestlogin(user_email, user_password) {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/login',
+        url: 'https://localhost:8080/login',
         data: {
             user_email: user_email,
             password: user_password
         },
         success: function(response) {
-            alert("Welcome to Our Lovely Clients page " + response.name)
-            $("#info_headear").val("Our Lovely Clients   " + response.name);
-            window.location.replace("http://localhost:8080" + response.url);
+            if (response.result){
+                alert("Welcome to Our Lovely Clients page " + response.name)
+                $("#info_headear").val("Our Lovely Clients   " + response.name);
+                window.location.replace("https://localhost:8080" + response.url);
+            }
+            else{
+                alert(response.error)
+            }
         },
         error: function(error) {
             console.log(error);
@@ -93,7 +98,7 @@ function sendPOSTRequestlogin(user_email, user_password) {
 function sendPOSTRequestfogotpas(user_email) {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/forgot-password',
+        url: 'https://localhost:8080/forgot-password',
         data: {
             user_email: user_email
         },

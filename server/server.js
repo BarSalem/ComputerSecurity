@@ -27,7 +27,7 @@ import {   check_connection,get_user_name,
     search,
     activate_user,
     forgot_pass,
-    update_password_token } from '../database/DataBase_functionality.js';
+    update_password_token} from '../database/DataBase_functionality.js';
 
 
 const app = express();
@@ -85,7 +85,7 @@ app.post('/register', async (req, res) => {
     console.log(user_email, fname, lname, user_password, user_phone);
     const is_valid_password = checkPassword(user_password);
     if(is_valid_password === 'all required elements'){
-    const hashed_password = hashPassword(user_password);
+    const hashed_password = await hashPassword(user_password);
     const user_token = generateRandomString();
     const create_user_status = await insert_user(connection, user_email, fname, lname, user_phone, hashed_password, user_token);
     console.log(create_user_status);
@@ -117,7 +117,7 @@ app.post('/forgot-password', async (req, res) => {
 app.post('/change-password', async (req, res) => {
     const token = req.body.token;
     const newPassword = req.body.new_password;
-    const new_hashed_password = hashPassword(newPassword);
+    const new_hashed_password = await hashPassword(newPassword);
     const is_valid_password = checkPassword(newPassword);
     if(is_valid_password === 'all required elements'){
     const user_email_exist = await update_password_token(connection, new_hashed_password, token);
@@ -136,7 +136,7 @@ app.post('/change-password', async (req, res) => {
 app.post('/login', async (req, res) => {
     const user_email = req.body.user_email;
     const user_password = req.body.password;
-    const hashed_password = hashPassword(user_password);
+    const hashed_password = await hashPassword(user_password);
     const login_user_status = await authentication_login(connection, user_email, hashed_password);
     if (login_user_status) {
         const user_name = await get_user_name(connection,user_email);
@@ -171,8 +171,8 @@ app.post('/del-client', async (req, res) => {
 
 app.post('/changepasswordlogged', async (req, res) => {
     const {email, user_old_password, user_new_password} = req.body;
-    const hashed_old_password = hashPassword(user_old_password);
-    const hashed_new_password = hashPassword(user_new_password);
+    const hashed_old_password = await hashPassword(user_old_password);
+    const hashed_new_password = await hashPassword(user_new_password);
     const is_valid_password = checkPassword(user_new_password);
     if(is_valid_password === 'all required elements'){
         const insert_client_status = await update_password(connection, email, hashed_old_password, hashed_new_password);
@@ -196,13 +196,22 @@ app.post('/searchclient', async (req,res) =>{
 
 app.get('/getclients', async (req, res) => {
         const all_clients= await get_all_clients(connection, 0);
-        console.log(all_clients);
         res.status(200).send(all_clients);
 });
 
 app.post('/temp', async (req,res) =>{
     const deleted_user = await delete_user(connection, req.body.email);
     if(deleted_user) res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
+});
+
+app.get('/grantclients',async (req,res) =>{
+    let i=0;
+    while (i<20){
+        const char = String.fromCharCode(i+97);
+        const client = await insert_client(connection, char+'@'+char+'.com', char,char,i,char);
+        i=i+1
+    }
+    res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
 });
 
 const server = https.createServer(options, app);

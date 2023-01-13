@@ -77,7 +77,7 @@ function sendEmail() {
 function sendPOSTRequestRequest(fname, lname, user_email, user_password, user_phone) {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/register',
+        url: 'https://localhost:8080/register',
         data: {
             fname:fname,
             lname:lname,
@@ -90,7 +90,7 @@ function sendPOSTRequestRequest(fname, lname, user_email, user_password, user_ph
                 alert(response.error)
             }
             else{
-                if (response.result == 'redirect') window.location.replace("http://localhost:8080" + response.url);
+                if (response.result == 'redirect') window.location.replace("https://localhost:8080" + response.url);
                 alert(response.message);
             }
         },
@@ -103,7 +103,7 @@ function sendPOSTRequestRequest(fname, lname, user_email, user_password, user_ph
 function sendPOSTRequestfogotpas(user_email) {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/forgot-password',
+        url: 'https://localhost:8080/forgot-password',
         data: {
             user_email: user_email
         },

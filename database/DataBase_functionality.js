@@ -9,6 +9,7 @@ const check_connection = async (con) =>
 const authentication_login = async (con, email, password) => {
   const sql_query = `SELECT email, password, logins FROM users_details WHERE email = ? AND password = ? AND activated = 1`;
   const sql_query_check = `SELECT email, password, logins FROM users_details WHERE email = ?`;
+  const reset_password_query = `UPDATE users_details SET logins = 0 WHERE email = ?;`;
   return new Promise(async (resolve, reject) => {
     const emailExist = await check_user_email(con, email);
     if (!emailExist) {
@@ -25,6 +26,11 @@ const authentication_login = async (con, email, password) => {
         return resolve(false);
       }
       if (result.length !== 0) {
+        con.query(reset_password_query, [email], async (err, result) => {
+          if (err) {
+            console.log("Oops... ERROR - something went wrong", err);
+            return resolve(false);
+          }})
         console.log("inside authentication_login - true");
         return resolve(result);
       } 

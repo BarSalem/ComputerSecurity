@@ -29,7 +29,7 @@ function sendRequest(start, search) {
     let firstRow = (start - 1) * 50;
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/getclients",
+        url: "https://localhost:8080/getclients",
         dataType: 'JSON',
         complete: function (res) {
             req = res.responseJSON;
@@ -39,7 +39,7 @@ function sendRequest(start, search) {
 
     /*$.ajax({
         type: 'POST',
-        url: 'http://localhost:8080',
+        url: 'https://localhost:8080',
         data: {
             start: firstRow,
             search: search
@@ -106,6 +106,7 @@ function searchAccount() {
                         r.email = clients_array[i].email
                         req.push(r);
                     }
+                    $("#table-content").empty()
                     addRowsToTable()
                 }
             });
@@ -137,7 +138,7 @@ function changeUserPassword() {
                     }
                     else{
                         alert(response.message)
-                        if (response.redirect) window.location.replace("http://localhost:8080" + response.url);
+                        if (response.redirect) window.location.replace("https://localhost:8080" + response.url);
                     }
                 }
             });
@@ -151,7 +152,7 @@ async function getAllClients() {
     totalRows = 999;
     var clients_array = await $.ajax({
         type: "GET",
-        url: "http://localhost:8080/getclients",
+        url: "https://localhost:8080/getclients",
         dataType: 'JSON',
         async: false,
         complete: function (res) {
@@ -318,12 +319,12 @@ function deleteUsersListeners() {
 function deleteUsers(email) {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/del-client",
+        url: "https://localhost:8080/del-client",
         dataType: 'JSON',
         data:{ email:email},
         async: false,
         complete: function (response) {
-            if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            if (response.result) window.location.replace("https://localhost:8080" + response.url);
             location.reload();
          }
      })
@@ -361,7 +362,7 @@ function addUserListener() {
                 url: '/add-client',
                 data: data,
                 success: function(response) {
-                    if (response.result) window.location.replace("http://localhost:8080" + response.url);
+                    if (response.result) window.location.replace("https://localhost:8080" + response.url);
                     location.reload();
                 }
             });
