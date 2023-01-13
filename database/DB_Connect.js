@@ -14,8 +14,7 @@ import {
   sort_by,
   search,
   activate_user,
-  forgot_pass,
-  check_login_attempts
+  forgot_pass
 } from "./DataBase_functionality.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -56,8 +55,8 @@ export var connection = mysql.createConnection({
 //   "Tomer100",
 //   "657657657657"
 // );
-//await authentication_login(connection, "Nati@gmail.com", "123456");
-//await update_password(connection, "Amit1@gmail.com", "Amit102");
+// await authentication_login(connection, "Tomer@gmail.com", "Tomer00");
+await update_password(connection, "Tomer@gmail.com", "456", "5");
 // await insert_client(
 //   connection,
 //   "Bar@gmail.com",
@@ -78,7 +77,6 @@ export var connection = mysql.createConnection({
 // console.log(await get_all_clients(connection, 0));
 // console.log(await sort_by(connection, config.DB.tables.clients.fields.last_name));
 // console.log(await search(connection, "b", 5))
-
-// connection.end()
+connection.end()
 
 

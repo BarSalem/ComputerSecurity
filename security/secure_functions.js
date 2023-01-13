@@ -1,27 +1,26 @@
 import config from '../configuration.json' assert {type: 'json'};
+import validator from 'validator'
 
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const isValidEmail = (email) => emailRegex.test(email);
+const isValidEmail = (email) => {
+    let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return emailRegex.test(email);
+}
 
 const checkPassword = (password) => {
-    
-    const passwordRegex = new RegExp(config.password.characters.regex)
-    const lowercaseRegex = new RegExp(config.password.characters.lowercase);
-    const uppercaseRegex = new RegExp(config.password.characters.uppercase);
-    const numbersRegex = new RegExp(config.password.characters.numbers);
-    const specialRegex = new RegExp(config.password.characters.special);
+    const lowercaseRegex = /[a-z]/;
+    const uppercaseRegex = /[A-Z]/;
+    const numbersRegex = /\d/;
+    const specialRegex = /[!@#$%^&)(+=._-]/;
     const seqs = config.password.avoid_sequence;
     if (seqs.some(seq => password.includes(seq))) {
         return 'password contains a sequence';
-    } if (!passwordRegex.test(password)) {
-        return 'password contains invalid characters';
-    } if (!uppercaseRegex.test(password)) {
+    } if (!uppercaseRegex.test(password) && config.password.chars.uppercase) {
         return 'uppercase letter';
-    } if (!numbersRegex.test(password)) {
+    } if (!numbersRegex.test(password) && config.password.chars.numbers) {
         return 'number';
-    } if (!specialRegex.test(password)) {
+    } if (!specialRegex.test(password) && config.password.chars.special) {
         return 'special character';
-    } if (!lowercaseRegex.test(password)) {
+    } if (!lowercaseRegex.test(password) && config.password.chars.lowercase) {
         return 'lowercase letter';
     } if (password.length != config.password.length) {
         return 'length';
@@ -29,24 +28,15 @@ const checkPassword = (password) => {
     return 'all required elements';
 };
 
+const checkPhone = (phoneNumber) => {
+    let phoneRegEx =/^[0-9]{9}$/;
+    return phoneRegEx.test(phoneNumber);
+}
 
-// const loginAttempts = {};
+const inputValidate = (userInput) => {
+    return validator.escape(userInput);
+}
 
-// const checkLoginAttempts = (username) => {
-//     if (!loginAttempts[username]) {
-//         loginAttempts[username] = 1;
-//     } else {
-//         loginAttempts[username] += 1;
-//     }
+// console.log(checkPassword("@#$%$Ad2"));
 
-//     if (loginAttempts[username] > config.login.num_of_login_attempts) {
-//         return 'Too many login attempts';
-//     } else {
-//         delete loginAttempts[username]
-//         return 'OK';
-//     }
-// }
-
-console.log(checkPassword("ABCd123"));
-
-export { checkPassword, isValidEmail }
+export { checkPassword, isValidEmail, inputValidate, checkPhone }
