@@ -2,8 +2,7 @@
 import express from "express";
 import path from "path";
 import bodyParser from "body-parser";
-import fs from 'fs';
-import tls from 'tls';
+
 import fs from 'fs';
 import tls from 'tls';
 
@@ -12,7 +11,6 @@ import { dirname } from 'path';
 import { sendChangePasswordName, sendConfirmationEmail } from '../server/node_mailing.js'
 import { connection } from '../database/DB_Connect.js'
 import { hashPassword, generateRandomString } from "./encryption.js";
-import {   check_connection,get_user_name,
 import {   check_connection,get_user_name,
     authentication_login,
     check_user_email,
@@ -27,9 +25,7 @@ import {   check_connection,get_user_name,
     search,
     activate_user,
     forgot_pass,
-    update_password_token,
-    update_password_token,
-    check_login_attempts } from '../database/DataBase_functionality.js'
+    update_password_token } from '../database/DataBase_functionality.js'
 
 
 const app = express();
@@ -39,17 +35,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use(express.static(path.join(__dirname, '/../front')));
 
-/*const options = {
+const options = {
     key: fs.readFileSync(path.join(__dirname,'localhost.key')),
     cert: fs.readFileSync(path.join(__dirname,'./localhost.crt')),
     minVersion: tls.Server.TLSv1_2_method
-  };*/
-
-/*const options = {
-    key: fs.readFileSync(path.join(__dirname,'localhost.key')),
-    cert: fs.readFileSync(path.join(__dirname,'./localhost.crt')),
-    minVersion: tls.Server.TLSv1_2_method
-  };*/
+  };
 
 app.get('/', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/login-page.html'));
@@ -67,7 +57,6 @@ app.get('/forgotpassword', (req, res) => {
     res.status(200).sendFile(path.join(__dirname + '/../front/forgot-password.html'));
 })
 
-app.get('/changepassword:id', (req, res) => {
 app.get('/changepassword:id', (req, res) => {
     // activate password token of user
     res.status(200).sendFile(path.join(__dirname + '/../front/change-password.html'));
@@ -114,22 +103,13 @@ app.post('/forgot-password', async (req, res) => {
             sendChangePasswordName(user_email, user_password_token)
         }
     }
-        const forgot_password_succ = await forgot_pass(connection, user_email, user_password_token)
-        if (forgot_password_succ){
-            sendChangePasswordName(user_email, user_password_token)
-        }
-    }
     res.status(200).send({ "message": "If the user exist, the mail has been sent!" });
 })
 
 app.post('/change-password', async (req, res) => {
     const token = req.body.token
-    const token = req.body.token
     const newPassword = req.body.new_password
     const new_hashed_password = hashPassword(newPassword)
-    const user_email_exist = await update_password_token(connection, new_hashed_password, token)
-    console.log(user_email_exist);
-    if (user_email_exist) {
     const user_email_exist = await update_password_token(connection, new_hashed_password, token)
     console.log(user_email_exist);
     if (user_email_exist) {
@@ -145,8 +125,6 @@ app.post('/login', async (req, res) => {
     const hashed_password = hashPassword(user_password)
     const login_user_status = await authentication_login(connection, user_email, hashed_password)
     if (login_user_status) {
-        const user_name = await get_user_name(connection,user_email)
-        res.status(200).send({result: 'redirect', url:'/info', name: user_name})
         const user_name = await get_user_name(connection,user_email)
         res.status(200).send({result: 'redirect', url:'/info', name: user_name})
     }
@@ -200,6 +178,10 @@ app.post('/changepasswordlogged', async (req, res) => {
     const hashed_old_password = hashPassword(user_old_password)
     const hashed_new_password = hashPassword(user_new_password)
     const insert_client_status = await update_password(connection, email, hashed_old_password, hashed_new_password)
+    console.log(insert_client_status)
+    if(insert_client_status === 'Wrong'){
+        res.status(200).send({result: 'redirect', url:'/', message:'You cant use one of your last 3 passwords, Please choose another one'});
+    }
     if (insert_client_status) {
         res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
     }
@@ -225,7 +207,6 @@ app.post('/temp', async (req,res) =>{
     if(deleted_user) res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
 })
 
-//const server = tls.createServer(options, app);
 app.post('/temp', async (req,res) =>{
     const deleted_user = await delete_user(connection, req.body.email);
     if(deleted_user) res.status(200).send({result: 'redirect', url:'/', message:'If the credentials correct your password has been changed'});
@@ -233,4 +214,4 @@ app.post('/temp', async (req,res) =>{
 
 //const server = tls.createServer(options, app);
 
-app.listen(process.env.PORT, () => { console.log("Server is running on port " + process.env.PORT); })
+app.listen(process.env.PORT,() => { console.log("Server is running on port " + process.env.PORT); })
