@@ -42,7 +42,7 @@ let sql_history_table =
   "CREATE TABLE IF NOT EXISTS " +
   process.env.DB_NAME +
   ".password_history" +
-  "(`email` VARCHAR(50) NOT NULL, `password` VARCHAR(45) NOT NULL,`creation_date` DATETIME NOT NULL, PRIMARY KEY(`email`, `password`))";
+  "(`email` VARCHAR(50) NOT NULL, `password` VARCHAR(128) NOT NULL,`creation_date` DATETIME NOT NULL, PRIMARY KEY(`email`, `password`))";
 
 con.query(sql_history_table, function (err, result) {
   if (err) throw err;
