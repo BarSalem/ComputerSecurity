@@ -7,9 +7,9 @@ const check_connection = async (con) =>
   });
 
 const authentication_login = async (con, email, password) => {
-  const sql_query = `SELECT email, password, logins FROM users_details WHERE email = ? AND password = ? AND activated = 1`;
-  const sql_query_check = `SELECT email, password, logins FROM users_details WHERE email = ?`;
-  const reset_password_query = `UPDATE users_details SET logins = 0 WHERE email = ?;`;
+  const sql_query = `SELECT email, password, logins FROM users_details WHERE activated = 1 AND email = ${email} AND password = ${password} `;
+  const sql_query_check = `SELECT email, password, logins FROM users_details WHERE email = ${email}`;
+  const reset_password_query = `UPDATE users_details SET logins = 0 WHERE email = ${email};`;
   return new Promise(async (resolve, reject) => {
     const emailExist = await check_user_email(con, email);
     if (!emailExist) {
@@ -20,13 +20,13 @@ const authentication_login = async (con, email, password) => {
     if (!check_logs) {
       return resolve(false);
     }
-    con.query(sql_query, [email, password], async (err, result) => {
+    con.query(sql_query, async (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
       }
       if (result.length !== 0) {
-        con.query(reset_password_query, [email], async (err, result) => {
+        con.query(reset_password_query, async (err, result) => {
           if (err) {
             console.log("Oops... ERROR - something went wrong", err);
             return resolve(false);
@@ -35,7 +35,7 @@ const authentication_login = async (con, email, password) => {
         return resolve(result);
       } 
 
-      con.query(sql_query_check, [email], async (err, result) => {
+      con.query(sql_query_check, async (err, result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
@@ -56,10 +56,10 @@ const authentication_login = async (con, email, password) => {
 };
 
 const check_user_email = async (con, email) => {
-  const sql_query = `SELECT email FROM users_details WHERE email = ?`;
+  const sql_query = `SELECT email FROM users_details WHERE email = ${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query, [email], (err, result) => {
+    con.query(sql_query, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -71,10 +71,10 @@ const check_user_email = async (con, email) => {
 };
 
 const get_user_name = async (con, email) => {
-  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = ?`;
+  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = ${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query, [email], (err, result) => {
+    con.query(sql_query, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -86,10 +86,10 @@ const get_user_name = async (con, email) => {
 };
 
 const check_client_email = async (con, email) => {
-  const sql_query = `SELECT email FROM clients WHERE email = ?`;
+  const sql_query = `SELECT email FROM clients WHERE email = ${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query, [email], (err, result) => {
+    con.query(sql_query, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -103,9 +103,9 @@ const check_client_email = async (con, email) => {
 const delete_earliest_password = async (con, email) => {
   const sql_query_delete = `with tbl as(select * from communication_ltd.password_history)
     delete from communication_ltd.password_history where 
-    email = ? and creation_date <= all(select tbl.creation_date from tbl)`;
+    creation_date <= all(select tbl.creation_date from tbl) AND email = ${email} `;
   return new Promise((resolve, reject) => {
-    con.query(sql_query_delete, [email], (err, result) => {
+    con.query(sql_query_delete, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -117,11 +117,11 @@ const delete_earliest_password = async (con, email) => {
 
 //don't export
 const update_pass_history = async (con, email, password) => {
-  const sql_count_query = `SELECT email, password FROM communication_ltd.password_history WHERE email=?`;
+  const sql_count_query = `SELECT email, password FROM communication_ltd.password_history WHERE email=${email}`;
 
-  const sql_add_latest = `INSERT INTO communication_ltd.password_history (email,password,creation_date) VALUES (?, ?, NOW())`;
+  const sql_add_latest = `INSERT INTO communication_ltd.password_history (email,password,creation_date) VALUES (${email}, ${password}, NOW())`;
   return new Promise((resolve, reject) => {
-    con.query(sql_count_query, [email], async (err, result) => {
+    con.query(sql_count_query, async (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -141,7 +141,7 @@ const update_pass_history = async (con, email, password) => {
           num_of_pass -= 1;
         }
       }
-      con.query(sql_add_latest, [email, password], (err, result) => {
+      con.query(sql_add_latest, (err, result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
@@ -156,8 +156,8 @@ const update_pass_history = async (con, email, password) => {
 
 const update_password = async (con, email, old_pass, new_pass) => {
   const sql_update_query = `UPDATE users_details
-  SET password = ? , pass_token_activated = 1
-  WHERE email = ? AND password = ?;`;
+  SET password = ${new_pass} , pass_token_activated = 1
+  WHERE email = ${email} AND password = ${old_pass};`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -169,7 +169,7 @@ const update_password = async (con, email, old_pass, new_pass) => {
       console.log("User selected one of his pre passwords...");
       return resolve(false);
     } 
-    con.query(sql_update_query, [new_pass, email, old_pass], async (err, result) => {
+    con.query(sql_update_query, async (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -181,19 +181,17 @@ const update_password = async (con, email, old_pass, new_pass) => {
 };
 
 const update_password_token = async (con, new_pass, pass_token) => {
-  const sql_update_query = `UPDATE users_details SET password = ? , pass_token_activated = 1 WHERE password_token = ? AND pass_token_activated = 0;`;   
-  const get_email_by_token = `SELECT email FROM communication_ltd.users_details WHERE password_token = ?`; 
+  const sql_update_query = `UPDATE users_details SET password = ${new_pass} , pass_token_activated = 1 WHERE password_token = ${pass_token} AND pass_token_activated = 0;`;   
+  const get_email_by_token = `SELECT email FROM communication_ltd.users_details WHERE password_token = ${pass_token}`; 
   return new Promise(async (resolve, reject) => {
-    con.query(sql_update_query, [new_pass, pass_token], async (err, result) => {
+    con.query(sql_update_query, async (err, result) => {
       if (err) {         
       console.log("Oops... ERROR - something went wrong", err);         
       return resolve(false);       
       }     
     });     
-    con.query(get_email_by_token, [pass_token], async (err, result) => {       
-      console.log(123);       
+    con.query(get_email_by_token, async (err, result) => {       
       const email=result[0].email       
-      console.log(email);       
       console.log("inside update_password_token - done!");       
       const update_history = await update_pass_history(con, email, new_pass)       
       return resolve(update_history);     
@@ -210,7 +208,7 @@ const insert_user = async (
   password,
   creation_token
 ) => {
-  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, login_time, activated) VALUES (?, ?, ?, ?, ?, 0, 0, ?, 0, NOW(), 0)`;
+  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, login_time, activated) VALUES (${email}, ${first_name}, ${last_name}, ${phone_number}, ${password}, 0, 0, ${creation_token}, 0, NOW(), 0)`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -218,7 +216,7 @@ const insert_user = async (
       console.log("User is already exists!");
       return resolve(false);
     }
-    con.query(sql_query_users, [email, first_name, last_name, phone_number, password, creation_token], async (err, result) => {
+    con.query(sql_query_users, async (err, result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
@@ -238,10 +236,10 @@ const insert_user = async (
 const activate_user = async (con, url_token) => {
   const sql_query_activate = `UPDATE users_details
     SET activated = 1
-    WHERE creation_token = ?;`;
+    WHERE creation_token = ${url_token};`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_activate, [url_token], (err, result) => {
+    con.query(sql_query_activate, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong");
         return resolve(false);
@@ -255,8 +253,8 @@ const activate_user = async (con, url_token) => {
 
 const forgot_pass = async (con, email, password_token) => {
   const sql_forgot_query = `UPDATE users_details
-    SET password_token =? , pass_token_activated = 0
-    WHERE email = ?;`;
+    SET password_token =${password_token} , pass_token_activated = 0
+    WHERE email = ${email};`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -264,7 +262,7 @@ const forgot_pass = async (con, email, password_token) => {
       console.log("User is not exists!");
       return resolve(false);
     }
-    con.query(sql_forgot_query, [password_token, email], async (err, result) => {
+    con.query(sql_forgot_query, async (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -276,10 +274,10 @@ const forgot_pass = async (con, email, password_token) => {
 
 
 const delete_client = async (con, email) => {
-  const sql_query_users = `DELETE FROM clients WHERE email=?`;
+  const sql_query_users = `DELETE FROM clients WHERE email=${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_users, [email], (err, result) => {
+    con.query(sql_query_users, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong");
         return resolve(false);
@@ -291,7 +289,7 @@ const delete_client = async (con, email) => {
 };
 
 const insert_client = async (con, email, first_name, last_name, phone_number, city) => {
-  const sql_query_users = `INSERT INTO communication_ltd.clients (email,first_name,last_name,phone_number,city) VALUES (?, ?, ?, ?, ?)`;
+  const sql_query_users = `INSERT INTO communication_ltd.clients (email,first_name,last_name,phone_number,city) VALUES (${email}, ${first_name}, ${last_name}, ${phone_number}, ${city})`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_client_email(con, email);
@@ -299,7 +297,7 @@ const insert_client = async (con, email, first_name, last_name, phone_number, ci
       console.log("Client is already exists!");
       return resolve(false);
     }
-    con.query(sql_query_users, [email, first_name, last_name, phone_number, city], (err, result) => {
+    con.query(sql_query_users, (err, result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
@@ -313,12 +311,12 @@ const insert_client = async (con, email, first_name, last_name, phone_number, ci
 };
 
 const delete_user = async (con, email) => {
-  const sql_query_users = `DELETE FROM users_details WHERE email=?`;
+  const sql_query_users = `DELETE FROM users_details WHERE email=${email}`;
 
-  const sql_query_passwords = `DELETE FROM password_history WHERE email=?`;
+  const sql_query_passwords = `DELETE FROM password_history WHERE email=${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_users, [email], (err, result) => {
+    con.query(sql_query_users, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -327,7 +325,7 @@ const delete_user = async (con, email) => {
       }
     });
 
-    con.query(sql_query_passwords, [email], (err, result) => {
+    con.query(sql_query_passwords, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -339,10 +337,10 @@ const delete_user = async (con, email) => {
 };
 
 const get_all_clients = async (con, start) => {
-  const sql_get_table_query = `SELECT * FROM clients LIMIT 50 OFFSET ?`;
+  const sql_get_table_query = `SELECT * FROM clients LIMIT 50 OFFSET ${start}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_get_table_query, [start], (err, result) => {
+    con.query(sql_get_table_query, (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -368,18 +366,10 @@ const sort_by = async (con, column_name) => {
 };
 
 const search = async (con, search_string, start) => {
-  const sql_search_query = `SELECT * FROM clients WHERE email LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR phone_number LIKE ? OR city LIKE ? LIMIT 50 OFFSET ?`;
+  const sql_search_query = `SELECT * FROM clients WHERE email LIKE %${search_string}% OR first_name LIKE ? %${search_string}% OR last_name LIKE %${search_string}% OR phone_number LIKE %${search_string}% OR city LIKE %${search_string}% LIMIT 50 OFFSET %${start}%`;
   return new Promise((resolve, reject) => {
     con.query(
       sql_search_query,
-      [
-        `%${search_string}%`,
-        `%${search_string}%`,
-        `%${search_string}%`,
-        `%${search_string}%`,
-        `%${search_string}%`,
-        start
-      ],
       (err, result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
@@ -394,10 +384,10 @@ const search = async (con, search_string, start) => {
 
 //don't export
 const check_login_attempts = async (con, email) => {
-  const sql_query_logins = `SELECT logins, login_time FROM communication_ltd.users_details WHERE email=?`;
+  const sql_query_logins = `SELECT logins, login_time FROM communication_ltd.users_details WHERE email=${email}`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_logins, [email], async (err, result) => {
+    con.query(sql_query_logins, async (err, result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -428,10 +418,10 @@ const check_login_attempts = async (con, email) => {
 const reset_logins = async (con, email) => {
   const sql_query_logins_reset =  `UPDATE users_details
   SET logins = 0, login_time = NOW()
-  WHERE email = ?;`;
+  WHERE email = ${email};`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_logins_reset, [email], (err,result) => {
+    con.query(sql_query_logins_reset, (err,result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);
@@ -444,11 +434,11 @@ const reset_logins = async (con, email) => {
 //don't export
 const update_logins = async (con, email, curr_logins) => {
     const sql_query_logins_update =  `UPDATE users_details
-    SET logins = ?, login_time = NOW()
-    WHERE email = ?;`;
+    SET logins = ${curr_logins + 1}, login_time = NOW()
+    WHERE email = ${email};`;
 
     return new Promise((resolve, reject) => {
-      con.query(sql_query_logins_update, [curr_logins + 1, email], (err,result) => {
+      con.query(sql_query_logins_update, (err,result) => {
         if (err) {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
@@ -462,10 +452,10 @@ const update_logins = async (con, email, curr_logins) => {
 const update_login_time = async (con, email) => {
   const sql_query_login_time_update =  `UPDATE users_details
   SET login_time = NOW()
-  WHERE email = ?;`;
+  WHERE email = ${email};`;
 
   return new Promise((resolve, reject) => {
-    con.query(sql_query_login_time_update, [email], (err,result) => {
+    con.query(sql_query_login_time_update, (err,result) => {
       if (err) {
         console.log("Oops... ERROR - something went wrong", err);
         return resolve(false);

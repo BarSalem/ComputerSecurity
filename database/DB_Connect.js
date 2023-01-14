@@ -27,5 +27,3 @@ export var connection = mysql.createConnection({
 });
 
 //connection.end()
-
-
