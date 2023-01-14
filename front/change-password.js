@@ -40,14 +40,19 @@ function sendPOSTRequestChangePassword(new_password) {
     const token = all_url[all_url.length - 1]
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/change-password',
+        url: 'https://localhost:8080/change-password',
         data: {
             token:token,
             new_password: new_password,
         },
         success: function(response) {
-            alert(response.message)
-            if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            if (response.error){
+                alert(response.error)
+            }
+            else{
+                alert(response.message)
+                if (response.result) window.location.replace("https://localhost:8080" + response.url);
+            }
         },
         error: function(error) {
             console.log(error);
