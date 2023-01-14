@@ -12,7 +12,7 @@ $(document).ready(() => {
     //todo: delete
     $("#insert-user").on("click", () => {$("#AddClient").submit();});
     $("#change-password-button").on("click", () =>{$("#change-password-form").submit();})
-    $("search-bar").on("click", () =>{$("#change-password-form").submit();})
+    $("search-user-button").on("click", () =>{$("#search-form").submit();})
     formSubmitListener();
     //todo: end delete
     //todo: remove '//'
@@ -29,7 +29,7 @@ function sendRequest(start, search) {
     let firstRow = (start - 1) * 50;
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/getclients",
+        url: "https://localhost:8080/getclients",
         dataType: 'JSON',
         complete: function (res) {
             req = res.responseJSON;
@@ -39,7 +39,7 @@ function sendRequest(start, search) {
 
     /*$.ajax({
         type: 'POST',
-        url: 'http://localhost:8080',
+        url: 'https://localhost:8080',
         data: {
             start: firstRow,
             search: search
@@ -67,9 +67,9 @@ function formSubmitListener(){
         changeUserPassword();
     });
 
-    $("#search_user_form").on("submit", (e) =>{
+    $("#search-form").on("submit", (e) =>{
         e.preventDefault();
-        changeUserPassword();
+        searchAccount();
     });
 
     $("#forgot-password-form").on("submit", (e) =>{
@@ -95,12 +95,22 @@ function searchAccount() {
                 url: '/searchclient',
                 data: data,
                 success: function(response) {
-                    if (response.result) {
-                        alert(response.message)
-                        window.location.replace("http://localhost:8080" + response.url);
+                    req=[]
+                    clients_array = response.clients
+                    for (let i = 0; i < clients_array.length; i++) {
+                        let r = {};
+                        r.firstName = clients_array[i].first_name
+                        r.lastName = clients_array[i].last_name
+                        r.city = clients_array[i].city
+                        r.phoneNum = clients_array[i].phone_number
+                        r.email = clients_array[i].email
+                        req.push(r);
                     }
+                    $("#table-content").empty()
+                    addRowsToTable()
                 }
             });
+            
             //todo:add request here (add user)
 }
 
@@ -123,9 +133,12 @@ function changeUserPassword() {
                 url: '/changepasswordlogged',
                 data: data,
                 success: function(response) {
-                    if (response.result) {
+                    if (response.error){
+                        alert(response.error)
+                    }
+                    else{
                         alert(response.message)
-                        window.location.replace("http://localhost:8080" + response.url);
+                        if (response.redirect) window.location.replace("https://localhost:8080" + response.url);
                     }
                 }
             });
@@ -139,7 +152,7 @@ async function getAllClients() {
     totalRows = 999;
     var clients_array = await $.ajax({
         type: "GET",
-        url: "http://localhost:8080/getclients",
+        url: "https://localhost:8080/getclients",
         dataType: 'JSON',
         async: false,
         complete: function (res) {
@@ -306,12 +319,12 @@ function deleteUsersListeners() {
 function deleteUsers(email) {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/del-client",
+        url: "https://localhost:8080/del-client",
         dataType: 'JSON',
         data:{ email:email},
         async: false,
         complete: function (response) {
-            if (response.result) window.location.replace("http://localhost:8080" + response.url);
+            if (response.result) window.location.replace("https://localhost:8080" + response.url);
             location.reload();
          }
      })
@@ -349,7 +362,7 @@ function addUserListener() {
                 url: '/add-client',
                 data: data,
                 success: function(response) {
-                    if (response.result) window.location.replace("http://localhost:8080" + response.url);
+                    if (response.result) window.location.replace("https://localhost:8080" + response.url);
                     location.reload();
                 }
             });
