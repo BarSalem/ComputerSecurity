@@ -7,9 +7,9 @@ const check_connection = async (con) =>
   });
 
 const authentication_login = async (con, email, password) => {
-  const sql_query = `SELECT email, password, logins FROM users_details WHERE activated = 1 AND email = ${email} AND password = ${password} `;
-  const sql_query_check = `SELECT email, password, logins FROM users_details WHERE email = ${email}`;
-  const reset_password_query = `UPDATE users_details SET logins = 0 WHERE email = ${email};`;
+  const sql_query = `SELECT email, password, logins FROM users_details WHERE activated = 1 AND email = '${email}' AND password = '${password}' `;
+  const sql_query_check = `SELECT email, password, logins FROM users_details WHERE email = '${email}'`;
+  const reset_password_query = `UPDATE users_details SET logins = 0 WHERE email = '${email}';`;
   return new Promise(async (resolve, reject) => {
     const emailExist = await check_user_email(con, email);
     if (!emailExist) {
@@ -40,6 +40,7 @@ const authentication_login = async (con, email, password) => {
           console.log("Oops... ERROR - something went wrong", err);
           return resolve(false);
         }
+        console.log(result[0].email ,email ,result[0].password ,password);
         if (result[0].email === email && result[0].password !== password){
           console.log("inside authentication_login - failed");
           let curr_logins = result[0].logins;
@@ -56,7 +57,7 @@ const authentication_login = async (con, email, password) => {
 };
 
 const check_user_email = async (con, email) => {
-  const sql_query = `SELECT email FROM users_details WHERE email = ${email}`;
+  const sql_query = `SELECT email FROM users_details WHERE email = '${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query, (err, result) => {
@@ -71,7 +72,7 @@ const check_user_email = async (con, email) => {
 };
 
 const get_user_name = async (con, email) => {
-  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = ${email}`;
+  const sql_query = `SELECT first_name,last_name FROM users_details WHERE email = '${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query, (err, result) => {
@@ -86,7 +87,7 @@ const get_user_name = async (con, email) => {
 };
 
 const check_client_email = async (con, email) => {
-  const sql_query = `SELECT email FROM clients WHERE email = ${email}`;
+  const sql_query = `SELECT email FROM clients WHERE email = '${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query, (err, result) => {
@@ -103,7 +104,7 @@ const check_client_email = async (con, email) => {
 const delete_earliest_password = async (con, email) => {
   const sql_query_delete = `with tbl as(select * from communication_ltd.password_history)
     delete from communication_ltd.password_history where 
-    creation_date <= all(select tbl.creation_date from tbl) AND email = ${email} `;
+    creation_date <= all(select tbl.creation_date from tbl) AND email = '${email}' `;
   return new Promise((resolve, reject) => {
     con.query(sql_query_delete, (err, result) => {
       if (err) {
@@ -117,9 +118,9 @@ const delete_earliest_password = async (con, email) => {
 
 //don't export
 const update_pass_history = async (con, email, password) => {
-  const sql_count_query = `SELECT email, password FROM communication_ltd.password_history WHERE email=${email}`;
+  const sql_count_query = `SELECT email, password FROM communication_ltd.password_history WHERE email='${email}'`;
 
-  const sql_add_latest = `INSERT INTO communication_ltd.password_history (email,password,creation_date) VALUES (${email}, ${password}, NOW())`;
+  const sql_add_latest = `INSERT INTO communication_ltd.password_history (email,password,creation_date) VALUES ('${email}', '${password}', NOW())`;
   return new Promise((resolve, reject) => {
     con.query(sql_count_query, async (err, result) => {
       if (err) {
@@ -156,8 +157,8 @@ const update_pass_history = async (con, email, password) => {
 
 const update_password = async (con, email, old_pass, new_pass) => {
   const sql_update_query = `UPDATE users_details
-  SET password = ${new_pass} , pass_token_activated = 1
-  WHERE email = ${email} AND password = ${old_pass};`;
+  SET password = '${new_pass}' , pass_token_activated = 1
+  WHERE email = '${email}' AND password = '${old_pass}';`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -181,8 +182,8 @@ const update_password = async (con, email, old_pass, new_pass) => {
 };
 
 const update_password_token = async (con, new_pass, pass_token) => {
-  const sql_update_query = `UPDATE users_details SET password = ${new_pass} , pass_token_activated = 1 WHERE password_token = ${pass_token} AND pass_token_activated = 0;`;   
-  const get_email_by_token = `SELECT email FROM communication_ltd.users_details WHERE password_token = ${pass_token}`; 
+  const sql_update_query = `UPDATE users_details SET password = '${new_pass}' , pass_token_activated = 1 WHERE password_token = '${pass_token}' AND pass_token_activated = 0;`;   
+  const get_email_by_token = `SELECT email FROM communication_ltd.users_details WHERE password_token = '${pass_token}'`; 
   return new Promise(async (resolve, reject) => {
     con.query(sql_update_query, async (err, result) => {
       if (err) {         
@@ -208,7 +209,7 @@ const insert_user = async (
   password,
   creation_token
 ) => {
-  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, login_time, activated) VALUES (${email}, ${first_name}, ${last_name}, ${phone_number}, ${password}, 0, 0, ${creation_token}, 0, NOW(), 0)`;
+  const sql_query_users = `INSERT INTO communication_ltd.users_details (email, first_name, last_name, phone_number, password, password_token, pass_token_activated, creation_token, logins, login_time, activated) VALUES ('${email}', '${first_name}', '${last_name}', '${phone_number}', '${password}', 0, 0, '${creation_token}', 0, NOW(), 0)`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -236,7 +237,7 @@ const insert_user = async (
 const activate_user = async (con, url_token) => {
   const sql_query_activate = `UPDATE users_details
     SET activated = 1
-    WHERE creation_token = ${url_token};`;
+    WHERE creation_token = '${url_token}';`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_activate, (err, result) => {
@@ -253,8 +254,8 @@ const activate_user = async (con, url_token) => {
 
 const forgot_pass = async (con, email, password_token) => {
   const sql_forgot_query = `UPDATE users_details
-    SET password_token =${password_token} , pass_token_activated = 0
-    WHERE email = ${email};`;
+    SET password_token ='${password_token}' , pass_token_activated = 0
+    WHERE email = '${email}';`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_user_email(con, email);
@@ -274,7 +275,7 @@ const forgot_pass = async (con, email, password_token) => {
 
 
 const delete_client = async (con, email) => {
-  const sql_query_users = `DELETE FROM clients WHERE email=${email}`;
+  const sql_query_users = `DELETE FROM clients WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_users, (err, result) => {
@@ -289,7 +290,7 @@ const delete_client = async (con, email) => {
 };
 
 const insert_client = async (con, email, first_name, last_name, phone_number, city) => {
-  const sql_query_users = `INSERT INTO communication_ltd.clients (email,first_name,last_name,phone_number,city) VALUES (${email}, ${first_name}, ${last_name}, ${phone_number}, ${city})`;
+  const sql_query_users = `INSERT INTO communication_ltd.clients (email,first_name,last_name,phone_number,city) VALUES ('${email}', '${first_name}', '${last_name}', '${phone_number}', '${city}')`;
 
   return new Promise(async (resolve, reject) => {
     const emailExists = await check_client_email(con, email);
@@ -311,9 +312,9 @@ const insert_client = async (con, email, first_name, last_name, phone_number, ci
 };
 
 const delete_user = async (con, email) => {
-  const sql_query_users = `DELETE FROM users_details WHERE email=${email}`;
+  const sql_query_users = `DELETE FROM users_details WHERE email='${email}'`;
 
-  const sql_query_passwords = `DELETE FROM password_history WHERE email=${email}`;
+  const sql_query_passwords = `DELETE FROM password_history WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_users, (err, result) => {
@@ -337,7 +338,7 @@ const delete_user = async (con, email) => {
 };
 
 const get_all_clients = async (con, start) => {
-  const sql_get_table_query = `SELECT * FROM clients LIMIT 50 OFFSET ${start}`;
+  const sql_get_table_query = `SELECT * FROM clients LIMIT 50 OFFSET '${start}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_get_table_query, (err, result) => {
@@ -352,7 +353,7 @@ const get_all_clients = async (con, start) => {
 
 const sort_by = async (con, column_name) => {
   const sql_sort_query =
-    `SELECT * FROM clients ORDER BY ${column_name} ASC;`;
+    `SELECT * FROM clients ORDER BY '${column_name}' ASC;`;
   return new Promise((resolve, reject) => {
     con.query(sql_sort_query, (err, result) => {
       if (err) {
@@ -366,7 +367,7 @@ const sort_by = async (con, column_name) => {
 };
 
 const search = async (con, search_string, start) => {
-  const sql_search_query = `SELECT * FROM clients WHERE email LIKE %${search_string}% OR first_name LIKE ? %${search_string}% OR last_name LIKE %${search_string}% OR phone_number LIKE %${search_string}% OR city LIKE %${search_string}% LIMIT 50 OFFSET %${start}%`;
+  const sql_search_query = `SELECT * FROM clients WHERE email LIKE '%${search_string}%' OR first_name LIKE ? '%${search_string}%' OR last_name LIKE '%${search_string}%' OR phone_number LIKE '%${search_string}%' OR city LIKE '%${search_string}%' LIMIT 50 OFFSET '${start}'`;
   return new Promise((resolve, reject) => {
     con.query(
       sql_search_query,
@@ -384,7 +385,7 @@ const search = async (con, search_string, start) => {
 
 //don't export
 const check_login_attempts = async (con, email) => {
-  const sql_query_logins = `SELECT logins, login_time FROM communication_ltd.users_details WHERE email=${email}`;
+  const sql_query_logins = `SELECT logins, login_time FROM communication_ltd.users_details WHERE email='${email}'`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_logins, async (err, result) => {
@@ -418,7 +419,7 @@ const check_login_attempts = async (con, email) => {
 const reset_logins = async (con, email) => {
   const sql_query_logins_reset =  `UPDATE users_details
   SET logins = 0, login_time = NOW()
-  WHERE email = ${email};`;
+  WHERE email = '${email}';`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_logins_reset, (err,result) => {
@@ -434,8 +435,8 @@ const reset_logins = async (con, email) => {
 //don't export
 const update_logins = async (con, email, curr_logins) => {
     const sql_query_logins_update =  `UPDATE users_details
-    SET logins = ${curr_logins + 1}, login_time = NOW()
-    WHERE email = ${email};`;
+    SET logins = '${curr_logins + 1}', login_time = NOW()
+    WHERE email = '${email}';`;
 
     return new Promise((resolve, reject) => {
       con.query(sql_query_logins_update, (err,result) => {
@@ -452,7 +453,7 @@ const update_logins = async (con, email, curr_logins) => {
 const update_login_time = async (con, email) => {
   const sql_query_login_time_update =  `UPDATE users_details
   SET login_time = NOW()
-  WHERE email = ${email};`;
+  WHERE email = '${email}';`;
 
   return new Promise((resolve, reject) => {
     con.query(sql_query_login_time_update, (err,result) => {
