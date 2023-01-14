@@ -138,13 +138,12 @@ app.post('/login', async (req, res) => {
     const user_password = req.body.password;
     const hashed_password = await hashPassword(user_password);
     const login_user_status = await authentication_login(connection, user_email, hashed_password);
-    if (login_user_status) {
-        const user_name = await get_user_name(connection,user_email);
-        res.status(200).send({result: 'redirect', url:'/info', name: user_name});
-        }
-        else {
-        res.status(200).send({error: "Wrong credentials"})
-        }
+    let results=[]
+    let i;
+    for (i=0; i<login_user_status.length; i++){
+        results.push(Object.values(JSON.parse(JSON.stringify(login_user_status[i]))));
+    }
+    res.status(200).send({result: 'redirect', url:'/info', message: results});
 });
 
 app.post('/add-client', async (req, res) => {
